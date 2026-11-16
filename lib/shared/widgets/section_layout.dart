@@ -123,7 +123,7 @@ class SectionNavButton extends StatelessWidget {
             Icon(
               icon,
               size: 18,
-              color: selected ? AppPalette.orange500 : c.textSecondary,
+              color: selected ? AppPalette.blue500 : c.textSecondary,
             ),
             const SizedBox(width: AppSpacing.s8),
             Expanded(

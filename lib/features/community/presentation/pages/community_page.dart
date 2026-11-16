@@ -229,7 +229,7 @@ void showNewPostSheet(
                   if (isPickingMedia) ...[
                     const SizedBox(height: AppSpacing.s12),
                     const LinearProgressIndicator(
-                      color: AppPalette.orange500,
+                      color: AppPalette.blue500,
                     ),
                   ],
                   if (mediaError != null) ...[
@@ -275,7 +275,7 @@ void showNewPostSheet(
                               width: 44,
                               height: 44,
                               decoration: const BoxDecoration(
-                                color: AppPalette.orange50,
+                                color: AppPalette.blue50,
                                 borderRadius: AppRadius.smAll,
                               ),
                               child: Icon(
@@ -346,7 +346,7 @@ void showNewPostSheet(
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppPalette.orange500,
+                      backgroundColor: AppPalette.buttonBlue,
                       foregroundColor: AppPalette.navy900,
                       elevation: 0,
                       minimumSize: const Size.fromHeight(46),
@@ -691,6 +691,8 @@ class _CommunityPageState extends State<CommunityPage> {
 
         return Scaffold(
           backgroundColor: c.backgroundCanvas,
+          bottomNavigationBar:
+              !isDesktop ? const HomeMobileBottomNav(selectedIndex: 3) : null,
           appBar: AppBar(
             backgroundColor: AppPalette.navy900,
             foregroundColor: AppPalette.neutral0,
@@ -709,7 +711,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   child: InitialsAvatar(
                     initials: 'TM',
                     size: 36,
-                    onTap: () => context.push(AppRoutes.settingsPath),
+                    onTap: () => context.push(AppRoutes.profilePath),
                   ),
                 ),
               ),
@@ -892,7 +894,7 @@ class _CommunityPageState extends State<CommunityPage> {
             Icon(
               _savedOnly ? Icons.bookmark : Icons.bookmark_border,
               size: 20,
-              color: AppPalette.orange500,
+              color: AppPalette.blue500,
             ),
             const SizedBox(width: AppSpacing.s12),
             Expanded(
@@ -907,7 +909,7 @@ class _CommunityPageState extends State<CommunityPage> {
             Text(
               '$savedCount',
               style: AppTypography.caption.copyWith(
-                color: AppPalette.orange500,
+                color: AppPalette.blue500,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -947,7 +949,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 Text(
                   state.events[i].dateLabel,
                   style: AppTypography.caption.copyWith(
-                    color: AppPalette.orange500,
+                    color: AppPalette.blue500,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -1177,7 +1179,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   width: 44,
                   height: 44,
                   decoration: const BoxDecoration(
-                    color: AppPalette.orange500,
+                    color: AppPalette.blue500,
                     borderRadius: AppRadius.mdAll,
                   ),
                   child: const Icon(
@@ -1209,7 +1211,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 ),
                 const Icon(
                   Icons.add_circle_outline,
-                  color: AppPalette.orange500,
+                  color: AppPalette.blue500,
                   size: 22,
                 ),
               ],
@@ -1266,7 +1268,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   width: 44,
                   height: 44,
                   decoration: const BoxDecoration(
-                    color: AppPalette.orange500,
+                    color: AppPalette.blue500,
                     borderRadius: AppRadius.mdAll,
                   ),
                   child: const Icon(
@@ -1298,7 +1300,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 ),
                 const Icon(
                   Icons.add_circle_outline,
-                  color: AppPalette.orange500,
+                  color: AppPalette.blue500,
                   size: 22,
                 ),
               ],
@@ -1352,7 +1354,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   width: 44,
                   height: 44,
                   decoration: const BoxDecoration(
-                    color: AppPalette.orange50,
+                    color: AppPalette.blue50,
                     borderRadius: AppRadius.mdAll,
                   ),
                   child: const Icon(
@@ -1447,7 +1449,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   width: 44,
                   height: 44,
                   decoration: const BoxDecoration(
-                    color: AppPalette.orange50,
+                    color: AppPalette.blue50,
                     borderRadius: AppRadius.mdAll,
                   ),
                   child: const Icon(
@@ -1464,7 +1466,7 @@ class _CommunityPageState extends State<CommunityPage> {
                       Text(
                         state.events[i].dateLabel,
                         style: AppTypography.caption.copyWith(
-                          color: AppPalette.orange500,
+                          color: AppPalette.blue500,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -1499,7 +1501,7 @@ class _CommunityPageState extends State<CommunityPage> {
                       .toggleEventRsvp(state.events[i].id),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: state.events[i].isGoing
-                        ? AppPalette.orange500
+                        ? AppPalette.blue500
                         : AppPalette.navy900,
                     foregroundColor: state.events[i].isGoing
                         ? AppPalette.navy900
@@ -1570,7 +1572,7 @@ class _SectionTabButton extends StatelessWidget {
             Icon(
               icon,
               size: 18,
-              color: selected ? AppPalette.orange500 : c.textSecondary,
+              color: selected ? AppPalette.blue500 : c.textSecondary,
             ),
             const SizedBox(width: AppSpacing.s8),
             Text(
@@ -1709,7 +1711,7 @@ class _CommunityPostCard extends StatelessWidget {
                   width: 18,
                   height: 18,
                   decoration: const BoxDecoration(
-                    color: AppPalette.orange500,
+                    color: AppPalette.blue500,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -1813,7 +1815,7 @@ class _PostActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final color = active ? AppPalette.orange500 : c.textSecondary;
+    final color = active ? AppPalette.blue500 : c.textSecondary;
 
     return InkWell(
       onTap: onTap,

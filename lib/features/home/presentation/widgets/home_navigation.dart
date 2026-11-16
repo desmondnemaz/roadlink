@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +7,8 @@ import 'package:roadlink/app/router/app_router.dart';
 import 'package:roadlink/app/theme/app_theme.dart';
 import 'package:roadlink/core/services/location_service.dart';
 import 'package:roadlink/features/home/presentation/cubit/location_cubit.dart';
+import 'package:roadlink/features/home/presentation/widgets/my_space_sheets.dart';
+import 'package:roadlink/features/services/presentation/widgets/service_request_sheet.dart';
 import 'package:roadlink/shared/widgets/roadlink_logo.dart';
 
 /// Triggers a one-time foreground GPS lookup via `geolocator` and shows
@@ -27,9 +31,10 @@ Future<void> triggerGpsDetection(BuildContext context) async {
 }
 
 /// Opens a modal bottom sheet allowing the user to detect their live GPS
-/// location via `geolocator` or search/select a Zimbabwe town, suburb, or city.
-void showLocationPickerSheet(BuildContext context) {
-  showModalBottomSheet<void>(
+/// location via `geolocator` or search/select any Zimbabwe street, suburb,
+/// landmark, or town (live autocomplete like inDrive).
+Future<void> showLocationPickerSheet(BuildContext context) {
+  return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: context.colors.surfaceDefault,
@@ -38,17 +43,25 @@ void showLocationPickerSheet(BuildContext context) {
     ),
     builder: (sheetContext) {
       var searchQuery = '';
+      var isSearching = false;
+      List<ZimbabwePlace>? liveResults;
+      Timer? debounce;
+
       return StatefulBuilder(
         builder: (context, setSheetState) {
           return BlocBuilder<LocationCubit, LocationState>(
             builder: (context, state) {
               final c = context.colors;
-              final filteredPlaces = LocationService.knownPlaces.where((p) {
+              final localPlaces = LocationService.knownPlaces.where((p) {
                 if (searchQuery.trim().isEmpty) return true;
                 return p.name.toLowerCase().contains(
                       searchQuery.trim().toLowerCase(),
                     );
               }).toList();
+              final displayPlaces =
+                  (searchQuery.trim().length >= 2 && liveResults != null)
+                      ? liveResults!
+                      : localPlaces;
 
               return SafeArea(
                 child: Padding(
@@ -103,7 +116,7 @@ void showLocationPickerSheet(BuildContext context) {
                                 }
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppPalette.orange500,
+                          backgroundColor: AppPalette.buttonBlue,
                           foregroundColor: AppPalette.navy900,
                           elevation: 0,
                           minimumSize: const Size.fromHeight(46),
@@ -180,18 +193,54 @@ void showLocationPickerSheet(BuildContext context) {
                       ),
                       const SizedBox(height: AppSpacing.s8),
                       TextField(
-                        onChanged: (value) =>
-                            setSheetState(() => searchQuery = value),
+                        onChanged: (value) {
+                          setSheetState(() => searchQuery = value);
+                          debounce?.cancel();
+                          if (value.trim().length < 2) {
+                            setSheetState(() {
+                              isSearching = false;
+                              liveResults = null;
+                            });
+                            return;
+                          }
+                          setSheetState(() => isSearching = true);
+                          debounce = Timer(
+                            const Duration(milliseconds: 350),
+                            () async {
+                              final results = await context
+                                  .read<LocationCubit>()
+                                  .searchPlaces(value);
+                              if (!sheetContext.mounted) return;
+                              setSheetState(() {
+                                liveResults = results;
+                                isSearching = false;
+                              });
+                            },
+                          );
+                        },
                         style: AppTypography.bodySmall.copyWith(
                           color: c.textPrimary,
                         ),
                         decoration: InputDecoration(
-                          hintText: 'Search town or suburb (e.g. Rusape, Mutare)...',
+                          hintText:
+                              'Search street, suburb, landmark, or town...',
                           prefixIcon: Icon(
                             Icons.search,
                             size: 18,
                             color: c.textSecondary,
                           ),
+                          suffixIcon: isSearching
+                              ? const Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                )
+                              : null,
                           isDense: true,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.s12,
@@ -202,48 +251,68 @@ void showLocationPickerSheet(BuildContext context) {
                       const SizedBox(height: AppSpacing.s8),
                       ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 260),
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          itemCount: filteredPlaces.length,
-                          separatorBuilder: (_, _) =>
-                              Divider(height: 1, color: c.borderDefault),
-                          itemBuilder: (context, index) {
-                            final place = filteredPlaces[index];
-                            final isSelected = state.areaLabel == place.name;
-
-                            return ListTile(
-                              dense: true,
-                              contentPadding: EdgeInsets.zero,
-                              leading: Icon(
-                                Icons.location_on_outlined,
-                                size: 18,
-                                color: isSelected
-                                    ? AppPalette.orange500
-                                    : c.textSecondary,
-                              ),
-                              title: Text(
-                                place.name,
-                                style: AppTypography.bodySmall.copyWith(
-                                  color: c.textPrimary,
-                                  fontWeight: isSelected
-                                      ? FontWeight.w700
-                                      : FontWeight.w500,
+                        child: displayPlaces.isEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: AppSpacing.s20,
                                 ),
-                              ),
-                              trailing: isSelected
-                                  ? const Icon(
-                                      Icons.check,
+                                child: Center(
+                                  child: Text(
+                                    isSearching
+                                        ? 'Searching Zimbabwe places...'
+                                        : 'No matching places found',
+                                    style: AppTypography.caption.copyWith(
+                                      color: c.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : ListView.separated(
+                                shrinkWrap: true,
+                                itemCount: displayPlaces.length,
+                                separatorBuilder: (_, _) =>
+                                    Divider(height: 1, color: c.borderDefault),
+                                itemBuilder: (context, index) {
+                                  final place = displayPlaces[index];
+                                  final isSelected =
+                                      state.areaLabel == place.name;
+
+                                  return ListTile(
+                                    dense: true,
+                                    contentPadding: EdgeInsets.zero,
+                                    leading: Icon(
+                                      Icons.location_on_outlined,
                                       size: 18,
-                                      color: AppPalette.orange500,
-                                    )
-                                  : null,
-                              onTap: () {
-                                context.read<LocationCubit>().selectPlace(place);
-                                Navigator.of(sheetContext).pop();
-                              },
-                            );
-                          },
-                        ),
+                                      color: isSelected
+                                          ? AppPalette.blue500
+                                          : c.textSecondary,
+                                    ),
+                                    title: Text(
+                                      place.name,
+                                      style: AppTypography.bodySmall.copyWith(
+                                        color: c.textPrimary,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                      ),
+                                    ),
+                                    trailing: isSelected
+                                        ? const Icon(
+                                            Icons.check,
+                                            size: 18,
+                                            color: AppPalette.blue500,
+                                          )
+                                        : null,
+                                    onTap: () {
+                                      debounce?.cancel();
+                                      context
+                                          .read<LocationCubit>()
+                                          .selectPlace(place);
+                                      Navigator.of(sheetContext).pop();
+                                    },
+                                  );
+                                },
+                              ),
                       ),
                     ],
                   ),
@@ -277,7 +346,7 @@ class InitialsAvatar extends StatelessWidget {
       width: size,
       height: size,
       decoration: const BoxDecoration(
-        color: AppPalette.orange50,
+        color: AppPalette.blue50,
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,
@@ -371,28 +440,34 @@ class HomeDesktopSidebar extends StatelessWidget {
                   _SidebarItem(
                     icon: Icons.assignment_outlined,
                     label: 'My requests',
-                    onTap: () {},
+                    onTap: () => showMyRequestsSheet(context),
                   ),
                   _SidebarItem(
                     icon: Icons.chat_bubble_outline,
                     label: 'Messages',
-                    onTap: () {},
+                    onTap: () => showMessagesSheet(context),
                   ),
                   _SidebarItem(
                     icon: Icons.favorite_border,
                     label: 'Saved finds',
-                    onTap: () {},
+                    onTap: () =>
+                        context.push('${AppRoutes.marketplacePath}?saved=true'),
                   ),
                   _SidebarItem(
                     icon: Icons.directions_car_outlined,
                     label: 'My vehicles',
-                    onTap: () {},
+                    onTap: () => showMyVehiclesSheet(context),
+                  ),
+                  _SidebarItem(
+                    icon: Icons.admin_panel_settings_outlined,
+                    label: 'Admin',
+                    onTap: () => context.push(AppRoutes.userManagementPath),
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   _SidebarItem(
                     icon: Icons.help_outline,
                     label: 'Help & support',
-                    onTap: () {},
+                    onTap: () => showHelpSupportSheet(context),
                   ),
                   _SidebarItem(
                     icon: Icons.settings_outlined,
@@ -413,7 +488,7 @@ class HomeDesktopSidebar extends StatelessWidget {
               border: Border(top: BorderSide(color: AppPalette.navy800)),
             ),
             child: InkWell(
-              onTap: () => context.push(AppRoutes.welcomePath),
+              onTap: () => context.push(AppRoutes.profilePath),
               borderRadius: AppRadius.mdAll,
               child: Row(
                 children: [
@@ -440,10 +515,19 @@ class HomeDesktopSidebar extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 18,
-                    color: AppPalette.neutral300,
+                  IconButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Logged out of Roadlink.')),
+                      );
+                      context.go(AppRoutes.welcomePath);
+                    },
+                    icon: const Icon(
+                      Icons.logout,
+                      size: 18,
+                      color: AppPalette.neutral300,
+                    ),
+                    tooltip: 'Log out',
                   ),
                 ],
               ),
@@ -511,7 +595,7 @@ class _SidebarItem extends StatelessWidget {
               Icon(
                 icon,
                 size: 19,
-                color: selected ? AppPalette.orange500 : AppPalette.neutral300,
+                color: selected ? AppPalette.blue500 : AppPalette.neutral300,
               ),
               const SizedBox(width: AppSpacing.s12),
               Expanded(
@@ -529,7 +613,7 @@ class _SidebarItem extends StatelessWidget {
                   width: 6,
                   height: 6,
                   decoration: const BoxDecoration(
-                    color: AppPalette.orange500,
+                    color: AppPalette.blue500,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -660,7 +744,7 @@ class HomeDesktopTopBar extends StatelessWidget {
           InitialsAvatar(
             initials: 'TM',
             size: 36,
-            onTap: () => context.push(AppRoutes.settingsPath),
+            onTap: () => context.push(AppRoutes.profilePath),
           ),
         ],
       ),
@@ -713,7 +797,7 @@ class HomeMobileHeader extends StatelessWidget {
                 InitialsAvatar(
                   initials: 'TM',
                   size: 36,
-                  onTap: () => context.push(AppRoutes.settingsPath),
+                  onTap: () => context.push(AppRoutes.profilePath),
                 ),
               ],
             ),
@@ -741,14 +825,14 @@ class HomeMobileHeader extends StatelessWidget {
                           height: 14,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: AppPalette.orange500,
+                            color: AppPalette.blue500,
                           ),
                         )
                       else
                         const Icon(
                           Icons.location_on_outlined,
                           size: 16,
-                          color: AppPalette.orange500,
+                          color: AppPalette.blue500,
                         ),
                       const SizedBox(width: 6),
                       Text(
@@ -763,13 +847,6 @@ class HomeMobileHeader extends StatelessWidget {
                         Icons.keyboard_arrow_down,
                         size: 16,
                         color: AppPalette.neutral300,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '· GPS location',
-                        style: AppTypography.caption.copyWith(
-                          color: AppPalette.neutral400,
-                        ),
                       ),
                     ],
                   ),
@@ -812,13 +889,29 @@ class HomeMobileHeader extends StatelessWidget {
 /// `Community`, `Account`).
 class HomeMobileBottomNav extends StatelessWidget {
   final int selectedIndex;
-  final ValueChanged<int> onSelectTab;
+  final ValueChanged<int>? onSelectTab;
 
   const HomeMobileBottomNav({
     super.key,
     required this.selectedIndex,
-    required this.onSelectTab,
+    this.onSelectTab,
   });
+
+  void _defaultNavigate(BuildContext context, int index) {
+    if (index == selectedIndex) return;
+    switch (index) {
+      case 0:
+        context.go(AppRoutes.homePath);
+      case 1:
+        context.go(AppRoutes.servicesPath);
+      case 2:
+        context.go(AppRoutes.marketplacePath);
+      case 3:
+        context.go(AppRoutes.communityPath);
+      case 4:
+        context.go(AppRoutes.profilePath);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -846,7 +939,9 @@ class HomeMobileBottomNav extends StatelessWidget {
               for (var i = 0; i < items.length; i++)
                 Expanded(
                   child: InkWell(
-                    onTap: () => onSelectTab(i),
+                    onTap: () => onSelectTab != null
+                        ? onSelectTab!(i)
+                        : _defaultNavigate(context, i),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -854,7 +949,7 @@ class HomeMobileBottomNav extends StatelessWidget {
                           items[i].$1,
                           size: 22,
                           color: selectedIndex == i
-                              ? AppPalette.orange500
+                              ? AppPalette.blue500
                               : c.textSecondary,
                         ),
                         const SizedBox(height: 4),

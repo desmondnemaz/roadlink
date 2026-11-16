@@ -9,6 +9,8 @@ import 'package:roadlink/features/community/presentation/pages/community_page.da
 import 'package:roadlink/features/home/presentation/cubit/location_cubit.dart';
 import 'package:roadlink/features/home/presentation/widgets/home_navigation.dart';
 import 'package:roadlink/features/marketplace/data/marketplace_catalog.dart';
+import 'package:roadlink/features/services/presentation/cubit/service_request_cubit.dart';
+import 'package:roadlink/features/services/presentation/widgets/service_request_sheet.dart';
 
 /// Desktop Greeting Row (`Morning, Tendai.`, subtitle, and `Find nearby help`
 /// orange button with trailing GPS icon) matching `media_1794316982499_d7fffc3f.png`.
@@ -50,7 +52,7 @@ class HomeDesktopGreetingRow extends StatelessWidget {
                   ? null
                   : () => triggerGpsDetection(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppPalette.orange500,
+                backgroundColor: AppPalette.buttonBlue,
                 foregroundColor: AppPalette.navy900,
                 elevation: 0,
                 minimumSize: const Size(168, 44),
@@ -110,6 +112,8 @@ class HomeServicesAndNearYouSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _ServiceFinderHeroCard(isDesktop: isDesktop),
+        const SizedBox(height: AppSpacing.s16),
+        const _ActiveServiceRequestCard(),
         SizedBox(height: isDesktop ? AppSpacing.s24 : AppSpacing.s20),
         _ServicesNeedSection(isDesktop: isDesktop),
       ],
@@ -143,7 +147,7 @@ class _ServiceFinderHeroCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppPalette.orange500.withValues(alpha: 0.16),
+                      color: AppPalette.blue500.withValues(alpha: 0.16),
                       borderRadius: AppRadius.pillAll,
                     ),
                     child: Row(
@@ -152,13 +156,13 @@ class _ServiceFinderHeroCard extends StatelessWidget {
                         const Icon(
                           Icons.build_circle_outlined,
                           size: 14,
-                          color: AppPalette.orange500,
+                          color: AppPalette.blue500,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           'SERVICE FINDER · ${locationState.shortAreaName.toUpperCase()}',
                           style: AppTypography.caption.copyWith(
-                            color: AppPalette.orange500,
+                            color: AppPalette.blue500,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.4,
                           ),
@@ -191,9 +195,9 @@ class _ServiceFinderHeroCard extends StatelessWidget {
                 runSpacing: AppSpacing.s8,
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () => context.push(AppRoutes.servicesPath),
+                    onPressed: () => showServiceRequestSheet(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppPalette.orange500,
+                      backgroundColor: AppPalette.buttonBlue,
                       foregroundColor: AppPalette.navy900,
                       elevation: 0,
                       minimumSize: const Size(0, 44),
@@ -204,9 +208,9 @@ class _ServiceFinderHeroCard extends StatelessWidget {
                         borderRadius: AppRadius.mdAll,
                       ),
                     ),
-                    icon: const Icon(Icons.search, size: 18),
+                    icon: const Icon(Icons.add_circle_outline, size: 18),
                     label: Text(
-                      'Find a service',
+                      'Request a service',
                       style: AppTypography.button.copyWith(
                         color: AppPalette.navy900,
                       ),
@@ -244,6 +248,122 @@ class _ServiceFinderHeroCard extends StatelessWidget {
   }
 }
 
+class _ActiveServiceRequestCard extends StatelessWidget {
+  const _ActiveServiceRequestCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+
+    return BlocBuilder<ServiceRequestCubit, ServiceRequestState>(
+      builder: (context, state) {
+        final request = state.latestRequest;
+        if (request == null) return const SizedBox.shrink();
+
+        final lowest = request.lowestBidUsd;
+        final accepted = request.acceptedBidId != null;
+
+        return Container(
+          padding: const EdgeInsets.all(AppSpacing.s16),
+          decoration: BoxDecoration(
+            color: c.surfaceDefault,
+            borderRadius: AppRadius.lgAll,
+            border: Border.all(color: c.borderDefault),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'YOUR SERVICE REQUEST',
+                          style: AppTypography.caption.copyWith(
+                            color: c.textSecondary,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.s8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppPalette.blue500.withValues(alpha: 0.14),
+                            borderRadius: AppRadius.pillAll,
+                          ),
+                          child: Text(
+                            accepted
+                                ? 'Bid accepted'
+                                : '${request.bids.length} bids to review',
+                            style: AppTypography.caption.copyWith(
+                              color: AppPalette.blue500,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      request.details.isNotEmpty
+                          ? '${request.serviceType} · ${request.details}'
+                          : '${request.serviceType} request',
+                      style: AppTypography.label.copyWith(
+                        color: c.textPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${request.locationLabel} · ${request.createdAtLabel}'
+                      '${lowest != null ? ' · From US\$$lowest' : ''}',
+                      style: AppTypography.caption.copyWith(
+                        color: c.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.s12),
+              ElevatedButton(
+                onPressed: accepted
+                    ? () => context.push(AppRoutes.mapPath)
+                    : () => showServiceBidsSheet(context, request.id),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      accepted ? AppPalette.blue500 : AppPalette.navy900,
+                  foregroundColor:
+                      accepted ? AppPalette.navy900 : AppPalette.neutral0,
+                  elevation: 0,
+                  minimumSize: const Size(0, 40),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s16,
+                  ),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: AppRadius.mdAll,
+                  ),
+                ),
+                child: Text(
+                  accepted ? 'Track live →' : 'View bids →',
+                  style: AppTypography.caption.copyWith(
+                    color: accepted ? AppPalette.navy900 : AppPalette.neutral0,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
 class _ServicesNeedSection extends StatelessWidget {
   final bool isDesktop;
 
@@ -267,8 +387,9 @@ class _ServicesNeedSection extends StatelessWidget {
                 icon: Icons.build_outlined,
                 label: 'Mechanics',
                 isDesktop: isDesktop,
-                onTap: () => context.push(
-                  '${AppRoutes.servicesPath}?category=Mechanics',
+                onTap: () => showServiceRequestSheet(
+                  context,
+                  initialServiceType: 'Mechanics',
                 ),
               ),
             ),
@@ -278,8 +399,9 @@ class _ServicesNeedSection extends StatelessWidget {
                 icon: Icons.local_shipping_outlined,
                 label: 'Towing',
                 isDesktop: isDesktop,
-                onTap: () => context.push(
-                  '${AppRoutes.servicesPath}?category=Towing',
+                onTap: () => showServiceRequestSheet(
+                  context,
+                  initialServiceType: 'Towing',
                 ),
               ),
             ),
@@ -289,8 +411,9 @@ class _ServicesNeedSection extends StatelessWidget {
                 icon: Icons.album_outlined,
                 label: 'Tyres',
                 isDesktop: isDesktop,
-                onTap: () => context.push(
-                  '${AppRoutes.servicesPath}?category=Tyres',
+                onTap: () => showServiceRequestSheet(
+                  context,
+                  initialServiceType: 'Tyres',
                 ),
               ),
             ),
@@ -320,7 +443,7 @@ class _ServicesNeedSection extends StatelessWidget {
                     vertical: 12,
                   ),
                   decoration: const BoxDecoration(
-                    color: AppPalette.orange50,
+                    color: AppPalette.blue50,
                     borderRadius: AppRadius.mdAll,
                   ),
                   child: Row(
@@ -890,7 +1013,7 @@ class _ComposerQuickAction extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 16, color: AppPalette.orange500),
+            Icon(icon, size: 16, color: AppPalette.blue500),
             const SizedBox(width: 6),
             Text(
               label,
@@ -1046,7 +1169,7 @@ class _HomeCommunityPostCard extends StatelessWidget {
                   width: 18,
                   height: 18,
                   decoration: const BoxDecoration(
-                    color: AppPalette.orange500,
+                    color: AppPalette.blue500,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -1081,7 +1204,7 @@ class _HomeCommunityPostCard extends StatelessWidget {
                       Text(
                         'Join in',
                         style: AppTypography.caption.copyWith(
-                          color: AppPalette.orange500,
+                          color: AppPalette.blue500,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -1089,7 +1212,7 @@ class _HomeCommunityPostCard extends StatelessWidget {
                       const Icon(
                         Icons.arrow_forward,
                         size: 13,
-                        color: AppPalette.orange500,
+                        color: AppPalette.blue500,
                       ),
                     ],
                   ),

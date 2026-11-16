@@ -11,8 +11,13 @@ import 'package:roadlink/shared/widgets/section_layout.dart';
 /// and automotive accessories across Zimbabwe.
 class MarketplacePage extends StatefulWidget {
   final String? initialCategory;
+  final bool initialSavedOnly;
 
-  const MarketplacePage({super.key, this.initialCategory});
+  const MarketplacePage({
+    super.key,
+    this.initialCategory,
+    this.initialSavedOnly = false,
+  });
 
   @override
   State<MarketplacePage> createState() => _MarketplacePageState();
@@ -28,7 +33,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
 
   late String _selectedCategory;
   String _searchQuery = '';
-  bool _savedOnly = false;
+  late bool _savedOnly;
   final Set<String> _savedIds = <String>{};
 
   @override
@@ -37,6 +42,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
     final initial = widget.initialCategory;
     _selectedCategory =
         (initial != null && _categories.contains(initial)) ? initial : 'All';
+    _savedOnly = widget.initialSavedOnly;
   }
 
   void _toggleSaved(String id) {
@@ -74,7 +80,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                       child: Text(
                         item.category,
                         style: AppTypography.caption.copyWith(
-                          color: AppPalette.orange500,
+                          color: AppPalette.blue500,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -108,7 +114,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                 Text(
                   item.price,
                   style: AppTypography.h2.copyWith(
-                    color: AppPalette.orange500,
+                    color: AppPalette.blue500,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -133,7 +139,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                       icon: Icon(
                         isSaved ? Icons.favorite : Icons.favorite_border,
                         size: 18,
-                        color: isSaved ? AppPalette.orange500 : c.textPrimary,
+                        color: isSaved ? AppPalette.blue500 : c.textPrimary,
                       ),
                       label: Text(isSaved ? 'Saved' : 'Save'),
                     ),
@@ -336,6 +342,8 @@ class _MarketplacePageState extends State<MarketplacePage> {
 
     return Scaffold(
       backgroundColor: c.backgroundCanvas,
+      bottomNavigationBar:
+          !isDesktop ? const HomeMobileBottomNav(selectedIndex: 2) : null,
       appBar: AppBar(
         backgroundColor: AppPalette.navy900,
         foregroundColor: AppPalette.neutral0,
@@ -354,7 +362,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
               child: InitialsAvatar(
                 initials: 'TM',
                 size: 36,
-                onTap: () => context.push(AppRoutes.settingsPath),
+                onTap: () => context.push(AppRoutes.profilePath),
               ),
             ),
           ),
@@ -467,7 +475,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                 Icon(
                   _savedOnly ? Icons.favorite : Icons.favorite_border,
                   size: 20,
-                  color: AppPalette.orange500,
+                  color: AppPalette.blue500,
                 ),
                 const SizedBox(width: AppSpacing.s12),
                 Expanded(
@@ -482,7 +490,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                 Text(
                   '${_savedIds.length}',
                   style: AppTypography.caption.copyWith(
-                    color: AppPalette.orange500,
+                    color: AppPalette.blue500,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -507,7 +515,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                       Text(
                         kMarketplaceItems[i].price,
                         style: AppTypography.caption.copyWith(
-                          color: AppPalette.orange500,
+                          color: AppPalette.blue500,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -529,6 +537,34 @@ class _MarketplacePageState extends State<MarketplacePage> {
                   ),
                 ),
               ],
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.s16),
+        SectionRailCard(
+          title: 'Sell on Roadlink',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Register as a dealer, parts shop, or individual seller to list items.',
+                style: AppTypography.caption.copyWith(color: c.textSecondary),
+              ),
+              const SizedBox(height: AppSpacing.s12),
+              ElevatedButton(
+                onPressed: () =>
+                    context.push(AppRoutes.marketplaceRegisterPath),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppPalette.navy900,
+                  foregroundColor: AppPalette.neutral0,
+                  elevation: 0,
+                  minimumSize: const Size.fromHeight(40),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: AppRadius.mdAll,
+                  ),
+                ),
+                child: const Text('Register seller'),
+              ),
             ],
           ),
         ),
@@ -588,7 +624,7 @@ class _MarketplaceListingCard extends StatelessWidget {
                           isSaved ? Icons.favorite : Icons.favorite_border,
                           size: 16,
                           color: isSaved
-                              ? AppPalette.orange500
+                              ? AppPalette.blue500
                               : AppPalette.navy900,
                         ),
                       ),

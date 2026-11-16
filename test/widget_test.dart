@@ -15,8 +15,12 @@ void main() {
       final splashScaffold = tester.widget<Scaffold>(find.byType(Scaffold));
       expect(splashScaffold.backgroundColor, AppPalette.navy900);
 
-      // Advance past the 1.5s splash timer to reach Home Dashboard.
+      // Advance past the 1.5s splash timer to reach Auth Welcome, then Home Dashboard.
       await tester.pump(const Duration(milliseconds: 1600));
+      await tester.pumpAndSettle();
+      expect(find.text('Sign up'), findsOneWidget);
+
+      AppRouter.router.go(AppRoutes.homePath);
       await tester.pumpAndSettle();
 
       // Verify the Home Dashboard greeting and core sections are displayed.
@@ -60,7 +64,7 @@ void main() {
       ctx = tester.element(find.text('Brake inspection'));
       expect(ctx.colors.backgroundCanvas, AppPalette.navy950);
       expect(ctx.colors.surfaceDefault, AppPalette.navy900);
-      expect(ctx.colors.actionPrimary, AppPalette.orange500);
+      expect(ctx.colors.actionPrimary, AppPalette.buttonBlue);
 
       // Verify Auth Welcome (/welcome), Sign Up (/signup), and Log In (/login)
       // screens render with their Figma labels and fields.
@@ -98,11 +102,29 @@ void main() {
 
       AppRouter.router.go(AppRoutes.communityPath);
       await tester.pumpAndSettle();
-      expect(find.text('Community'), findsOneWidget);
+      expect(find.text('Community'), findsWidgets);
       expect(
         find.text('What’s on your pre-road-trip checklist?'),
         findsOneWidget,
       );
+
+      AppRouter.router.go(AppRoutes.serviceRegisterPath);
+      await tester.pumpAndSettle();
+      expect(find.text('Register your automotive service'), findsOneWidget);
+
+      AppRouter.router.go(AppRoutes.marketplaceRegisterPath);
+      await tester.pumpAndSettle();
+      expect(find.text('Sell on Roadlink Marketplace'), findsOneWidget);
+
+      AppRouter.router.go(AppRoutes.userManagementPath);
+      await tester.pumpAndSettle();
+      expect(find.text('Admin'), findsWidgets);
+      expect(find.text('Tendai Moyo'), findsOneWidget);
+
+      AppRouter.router.go(AppRoutes.profilePath);
+      await tester.pumpAndSettle();
+      expect(find.text('Profile'), findsOneWidget);
+      expect(find.text('Tendai Moyo'), findsOneWidget);
     },
   );
 }

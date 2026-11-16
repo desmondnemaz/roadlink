@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -26,7 +26,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     _timer = Timer(widget.delay, () {
-      if (mounted) context.goNamed(AppRoutes.homeName);
+      if (mounted) context.goNamed(AppRoutes.welcomeName);
     });
   }
 
@@ -64,7 +64,7 @@ class _SplashPageState extends State<SplashPage> {
                 width: 32,
                 height: 4,
                 decoration: const BoxDecoration(
-                  color: AppPalette.orange500,
+                  color: AppPalette.blue500,
                   borderRadius: AppRadius.pillAll,
                 ),
               ),

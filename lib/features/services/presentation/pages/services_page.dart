@@ -7,6 +7,7 @@ import 'package:roadlink/core/utils/responsive.dart';
 import 'package:roadlink/features/home/data/nearby_providers.dart';
 import 'package:roadlink/features/home/presentation/cubit/location_cubit.dart';
 import 'package:roadlink/features/home/presentation/widgets/home_navigation.dart';
+import 'package:roadlink/features/services/presentation/widgets/service_request_sheet.dart';
 import 'package:roadlink/shared/widgets/section_layout.dart';
 
 /// Full **All Services & Roadside Assistance** directory page.
@@ -79,6 +80,65 @@ class _ServicesPageState extends State<ServicesPage> {
         final mainColumn = Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            InkWell(
+              onTap: () => showServiceRequestSheet(
+                context,
+                initialServiceType:
+                    _selectedCategory == 'All' ? null : _selectedCategory,
+              ),
+              borderRadius: AppRadius.lgAll,
+              child: Container(
+                padding: const EdgeInsets.all(AppSpacing.s16),
+                decoration: const BoxDecoration(
+                  color: AppPalette.navy900,
+                  borderRadius: AppRadius.lgAll,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: const BoxDecoration(
+                        color: AppPalette.blue500,
+                        borderRadius: AppRadius.mdAll,
+                      ),
+                      child: const Icon(
+                        Icons.add_circle_outline,
+                        size: 22,
+                        color: AppPalette.navy900,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.s12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Request a service & get bids',
+                            style: AppTypography.label.copyWith(
+                              color: AppPalette.neutral0,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            'Share what you need and your location — providers will bid.',
+                            style: AppTypography.caption.copyWith(
+                              color: AppPalette.neutral300,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward,
+                      color: AppPalette.blue500,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.s16),
             // Search + GPS quick action row
             Row(
               children: [
@@ -104,7 +164,7 @@ class _ServicesPageState extends State<ServicesPage> {
                       ? null
                       : () => triggerGpsDetection(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppPalette.orange500,
+                    backgroundColor: AppPalette.buttonBlue,
                     foregroundColor: AppPalette.navy900,
                     elevation: 0,
                     minimumSize: const Size(0, 48),
@@ -269,6 +329,8 @@ class _ServicesPageState extends State<ServicesPage> {
 
         return Scaffold(
           backgroundColor: c.backgroundCanvas,
+          bottomNavigationBar:
+              !isDesktop ? const HomeMobileBottomNav(selectedIndex: 1) : null,
           appBar: AppBar(
             backgroundColor: AppPalette.navy900,
             foregroundColor: AppPalette.neutral0,
@@ -287,7 +349,7 @@ class _ServicesPageState extends State<ServicesPage> {
                   child: InitialsAvatar(
                     initials: 'TM',
                     size: 36,
-                    onTap: () => context.push(AppRoutes.settingsPath),
+                    onTap: () => context.push(AppRoutes.profilePath),
                   ),
                 ),
               ),
@@ -404,7 +466,7 @@ class _ServicesPageState extends State<ServicesPage> {
                   const Icon(
                     Icons.location_on_outlined,
                     size: 18,
-                    color: AppPalette.orange500,
+                    color: AppPalette.blue500,
                   ),
                   const SizedBox(width: AppSpacing.s8),
                   Expanded(
@@ -423,6 +485,33 @@ class _ServicesPageState extends State<ServicesPage> {
                 onPressed: () => context.push(AppRoutes.mapPath),
                 icon: const Icon(Icons.map_outlined, size: 18),
                 label: const Text('Open nearby map'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.s16),
+        SectionRailCard(
+          title: 'Are you a provider?',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Register your garage, towing, or mobile mechanic business to bid on local requests.',
+                style: AppTypography.caption.copyWith(color: c.textSecondary),
+              ),
+              const SizedBox(height: AppSpacing.s12),
+              ElevatedButton(
+                onPressed: () => context.push(AppRoutes.serviceRegisterPath),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppPalette.navy900,
+                  foregroundColor: AppPalette.neutral0,
+                  elevation: 0,
+                  minimumSize: const Size.fromHeight(40),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: AppRadius.mdAll,
+                  ),
+                ),
+                child: const Text('Register service'),
               ),
             ],
           ),
@@ -485,7 +574,7 @@ class _ServiceDirectoryCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: const BoxDecoration(
-                  color: AppPalette.orange50,
+                  color: AppPalette.blue50,
                   borderRadius: AppRadius.mdAll,
                 ),
                 child: Icon(
@@ -545,7 +634,7 @@ class _ServiceDirectoryCard extends StatelessWidget {
               const Icon(
                 Icons.star_border,
                 size: 16,
-                color: AppPalette.orange500,
+                color: AppPalette.blue500,
               ),
               const SizedBox(width: 4),
               Text(

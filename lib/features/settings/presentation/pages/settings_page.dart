@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:roadlink/app/theme/app_theme.dart';
 import 'package:roadlink/core/utils/responsive.dart';
@@ -98,6 +98,13 @@ class SettingsPage extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.s12),
               const _ServicePreviewCard(),
+              const SizedBox(height: AppLayout.sectionGap),
+              Text(
+                'Sky Blue palette sample',
+                style: AppTypography.h3.copyWith(color: c.textPrimary),
+              ),
+              const SizedBox(height: AppSpacing.s12),
+              const _SkyBlueSampleCard(),
             ],
           );
         },
@@ -184,6 +191,116 @@ class _ServicePreviewCard extends StatelessWidget {
                   label: 'Find services',
                   variant: RoadlinkButtonVariant.primary,
                   onPressed: () {},
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SkyBlueSampleCard extends StatelessWidget {
+  const _SkyBlueSampleCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    const swatches = [
+      ('sky50', AppPalette.blue50),
+      ('sky100', AppPalette.blue100),
+      ('sky400', AppPalette.blue400),
+      ('sky500', AppPalette.blue500),
+      ('sky600', AppPalette.blue600),
+    ];
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.s20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: AppSpacing.s12,
+              runSpacing: AppSpacing.s12,
+              children: [
+                for (final swatch in swatches)
+                  Column(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: swatch.$2,
+                          borderRadius: AppRadius.smAll,
+                          border: Border.all(color: c.borderDefault),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        swatch.$1,
+                        style: AppTypography.caption.copyWith(
+                          color: c.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.s16),
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.s12),
+              decoration: BoxDecoration(
+                color: c.infoBackground,
+                borderRadius: AppRadius.mdAll,
+                border: Border.all(
+                  color: AppPalette.blue500.withValues(alpha: 0.35),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, size: 18, color: c.infoForeground),
+                  const SizedBox(width: AppSpacing.s8),
+                  Expanded(
+                    child: Text(
+                      'Live GPS & verified provider badges look crisp in Sky Blue paired with Navy & Orange.',
+                      style: AppTypography.caption.copyWith(
+                        color: c.infoForeground,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.s16),
+            Wrap(
+              spacing: AppSpacing.s12,
+              runSpacing: AppSpacing.s8,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppPalette.buttonBlue,
+                    foregroundColor: AppPalette.neutral0,
+                    elevation: 0,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppRadius.mdAll,
+                    ),
+                  ),
+                  child: const Text('Sky Blue CTA'),
+                ),
+                OutlinedButton(
+                  onPressed: () {},
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppPalette.blue500,
+                    side: const BorderSide(color: AppPalette.blue500),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppRadius.mdAll,
+                    ),
+                  ),
+                  child: const Text('Sky Blue Outline'),
                 ),
               ],
             ),

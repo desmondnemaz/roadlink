@@ -24,6 +24,14 @@ class AppPalette {
   static const Color orange600 = Color(0xFFC96300);
   static const Color orange700 = Color(0xFF9C4A00);
 
+  // Brand Blue (#2563EB accent, #4A90E2 lighter button blue)
+  static const Color blue50 = Color(0xFFEFF6FF);
+  static const Color blue100 = Color(0xFFDBEAFE);
+  static const Color blue400 = Color(0xFF60A5FA);
+  static const Color blue500 = Color(0xFF2563EB);
+  static const Color blue600 = Color(0xFF1D4ED8);
+  static const Color buttonBlue = Color(0xFF4A90E2);
+
   // White & Neutrals
   static const Color neutral0 = Color(0xFFFFFFFF);
   static const Color neutral50 = Color(0xFFFBFCFE);
@@ -108,11 +116,11 @@ class RoadlinkColors extends ThemeExtension<RoadlinkColors> {
     actionPrimary: AppPalette.navy900,
     actionOnPrimary: AppPalette.neutral0,
     actionPrimaryHover: AppPalette.navy800,
-    actionAccent: AppPalette.orange500,
-    actionOnAccent: AppPalette.navy900,
-    actionAccentHover: AppPalette.orange300,
-    linkDefault: AppPalette.orange700,
-    focusRing: Color(0xFF1D4ED8),
+    actionAccent: AppPalette.buttonBlue,
+    actionOnAccent: AppPalette.neutral0,
+    actionAccentHover: AppPalette.blue400,
+    linkDefault: AppPalette.blue600,
+    focusRing: AppPalette.blue500,
     disabledBackground: AppPalette.neutral200,
     disabledText: AppPalette.neutral500,
     successForeground: Color(0xFF16734B),
@@ -121,8 +129,8 @@ class RoadlinkColors extends ThemeExtension<RoadlinkColors> {
     warningBackground: Color(0xFFFFF4D6),
     dangerForeground: Color(0xFFB42318),
     dangerBackground: Color(0xFFFEF3F2),
-    infoForeground: Color(0xFF1D4ED8),
-    infoBackground: Color(0xFFEFF6FF),
+    infoForeground: AppPalette.blue600,
+    infoBackground: AppPalette.blue50,
   );
 
   static const RoadlinkColors dark = RoadlinkColors(
@@ -134,14 +142,14 @@ class RoadlinkColors extends ThemeExtension<RoadlinkColors> {
     textSecondary: AppPalette.neutral300,
     textMuted: AppPalette.neutral400,
     borderDefault: AppPalette.navy600,
-    actionPrimary: AppPalette.orange500,
-    actionOnPrimary: AppPalette.navy900,
-    actionPrimaryHover: AppPalette.orange300,
-    actionAccent: AppPalette.orange500,
-    actionOnAccent: AppPalette.navy900,
-    actionAccentHover: AppPalette.orange300,
-    linkDefault: AppPalette.orange300,
-    focusRing: Color(0xFF93B4FF),
+    actionPrimary: AppPalette.buttonBlue,
+    actionOnPrimary: AppPalette.neutral0,
+    actionPrimaryHover: AppPalette.blue400,
+    actionAccent: AppPalette.buttonBlue,
+    actionOnAccent: AppPalette.neutral0,
+    actionAccentHover: AppPalette.blue400,
+    linkDefault: AppPalette.blue400,
+    focusRing: AppPalette.blue400,
     disabledBackground: AppPalette.navy800,
     disabledText: AppPalette.neutral400,
     successForeground: Color(0xFF6AD7A3),
@@ -150,14 +158,14 @@ class RoadlinkColors extends ThemeExtension<RoadlinkColors> {
     warningBackground: Color(0xFF3B2C12),
     dangerForeground: Color(0xFFFF8A80),
     dangerBackground: Color(0xFF3B1C24),
-    infoForeground: Color(0xFF93B4FF),
-    infoBackground: Color(0xFF132D51),
+    infoForeground: AppPalette.blue400,
+    infoBackground: Color(0xFF0C2D48),
   );
 
   static const LinearGradient brandGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [AppPalette.navy900, AppPalette.orange500],
+    colors: [AppPalette.navy900, AppPalette.blue500],
   );
 
   @override
@@ -351,6 +359,41 @@ class AppTheme {
         enabledBorder: border(c.borderDefault),
         focusedBorder: border(c.focusRing, 2),
         errorBorder: border(c.dangerForeground),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: c.actionPrimary,
+          foregroundColor: c.actionOnPrimary,
+          elevation: 0,
+          minimumSize: const Size(0, AppSizes.buttonHeight),
+          shape: const RoundedRectangleBorder(
+            borderRadius: AppRadius.mdAll,
+          ),
+          textStyle: AppTypography.button,
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: c.actionAccent,
+          foregroundColor: c.actionOnAccent,
+          elevation: 0,
+          minimumSize: const Size(0, AppSizes.buttonHeight),
+          shape: const RoundedRectangleBorder(
+            borderRadius: AppRadius.mdAll,
+          ),
+          textStyle: AppTypography.button,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: c.textPrimary,
+          side: BorderSide(color: c.borderDefault),
+          minimumSize: const Size(0, AppSizes.buttonHeight),
+          shape: const RoundedRectangleBorder(
+            borderRadius: AppRadius.mdAll,
+          ),
+          textStyle: AppTypography.button,
+        ),
       ),
     );
   }

@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
       case 3:
         context.push(AppRoutes.communityPath);
       case 4:
-        context.push(AppRoutes.settingsPath);
+        context.push(AppRoutes.profilePath);
     }
   }
 

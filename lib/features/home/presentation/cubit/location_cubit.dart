@@ -132,6 +132,14 @@ class LocationCubit extends Cubit<LocationState> {
     }
   }
 
+  /// Searches live Zimbabwe streets, suburbs, landmarks, and towns.
+  Future<List<ZimbabwePlace>> searchPlaces(String query) =>
+      _locationService.searchPlaces(query);
+
+  /// Live reverse-geocodes a coordinate pair to a human-readable address.
+  Future<String> reverseGeocode(double latitude, double longitude) =>
+      _locationService.reverseGeocode(latitude, longitude);
+
   /// Allows the user to manually choose a Zimbabwe suburb or city.
   Future<void> selectPlace(ZimbabwePlace place) async {
     await _persist(place.name, place.latitude, place.longitude);

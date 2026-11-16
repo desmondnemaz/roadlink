@@ -45,6 +45,8 @@ dependencies:
   latlong2: ^0.10.1
   image_picker: ^1.2.4
   video_player: ^2.14.1
+  data_table_2: ^3.0.0
+  material_ui: ^1.11.0
 
 dev_dependencies:
   flutter_test:

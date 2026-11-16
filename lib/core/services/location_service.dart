@@ -185,12 +185,39 @@ class LocationService {
     }
   }
 
+  /// Live reverse geocoding from `(latitude, longitude)` returning the most
+  /// specific street, suburb, or town name first, falling back to offline
+  /// Zimbabwe places only if network geocoders are unavailable.
+  Future<String> reverseGeocode(double latitude, double longitude) =>
+      _resolveLabel(latitude, longitude);
+
   Future<String> _resolveLabel(double latitude, double longitude) async {
-    // 1. If within 12 km of a known Zimbabwe town/suburb (e.g. Rusape), match
-    //    it immediately.
-    final nearest = _findClosestPlace(latitude, longitude);
-    if (nearest != null && nearest.$2 <= 12) {
-      return nearest.$1.name;
+    // 1. Query OpenStreetMap Nominatim reverse geocoding (street/suburb/town).
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        'https://nominatim.openstreetmap.org/reverse',
+        queryParameters: <String, dynamic>{
+          'format': 'jsonv2',
+          'lat': latitude,
+          'lon': longitude,
+          'zoom': 18,
+          'addressdetails': 1,
+        },
+      );
+      final data = response.data;
+      final address = data?['address'];
+      if (address is Map<String, dynamic>) {
+        final formatted = _formatNominatimAddress(address);
+        if (formatted != null && formatted.isNotEmpty) {
+          return formatted;
+        }
+      }
+      final displayName = (data?['display_name'] as String?)?.trim();
+      if (displayName != null && displayName.isNotEmpty) {
+        return displayName.split(',').take(2).map((s) => s.trim()).join(', ');
+      }
+    } catch (_) {
+      // Fall through to BigDataCloud / offline lookup.
     }
 
     // 2. Query BigDataCloud client-side reverse geocoder (CORS-friendly on Web
@@ -227,42 +254,108 @@ class LocationService {
         }
       }
     } catch (_) {
-      // Fall through to Nominatim / offline lookup.
-    }
-
-    // 3. Query OpenStreetMap Nominatim reverse geocoding.
-    try {
-      final response = await _dio.get<Map<String, dynamic>>(
-        'https://nominatim.openstreetmap.org/reverse',
-        queryParameters: <String, dynamic>{
-          'format': 'jsonv2',
-          'lat': latitude,
-          'lon': longitude,
-          'zoom': 14,
-        },
-      );
-      final address = response.data?['address'];
-      if (address is Map<String, dynamic>) {
-        final suburb = (address['suburb'] ??
-                address['neighbourhood'] ??
-                address['residential']) as String?;
-        final town = (address['town'] ??
-                address['city'] ??
-                address['village'] ??
-                address['municipality'] ??
-                address['state']) as String?;
-        if (suburb != null && town != null && suburb != town) {
-          return '$suburb, $town';
-        }
-        if (town != null) {
-          return town;
-        }
-      }
-    } catch (_) {
       // Fall through to offline Zimbabwe place table.
     }
 
     return resolveAreaLabel(latitude, longitude);
+  }
+
+  /// Searches live Zimbabwe streets, suburbs, landmarks, and towns via
+  /// OpenStreetMap Nominatim (like inDrive's live address autocomplete), falling
+  /// back to [knownPlaces] when offline or for short queries.
+  Future<List<ZimbabwePlace>> searchPlaces(String query) async {
+    final trimmed = query.trim();
+    final localMatches = knownPlaces
+        .where(
+          (p) =>
+              trimmed.isEmpty ||
+              p.name.toLowerCase().contains(trimmed.toLowerCase()),
+        )
+        .toList();
+
+    if (trimmed.length < 2) {
+      return localMatches;
+    }
+
+    try {
+      final response = await _dio.get<List<dynamic>>(
+        'https://nominatim.openstreetmap.org/search',
+        queryParameters: <String, dynamic>{
+          'q': trimmed,
+          'countrycodes': 'zw',
+          'format': 'jsonv2',
+          'addressdetails': 1,
+          'limit': 8,
+        },
+      );
+      final items = response.data;
+      if (items == null) return localMatches;
+
+      final liveResults = <ZimbabwePlace>[];
+      final seen = <String>{};
+      for (final raw in items) {
+        if (raw is! Map<String, dynamic>) continue;
+        final lat = double.tryParse('${raw['lat']}');
+        final lon = double.tryParse('${raw['lon']}');
+        if (lat == null || lon == null) continue;
+
+        final address = raw['address'];
+        String? label;
+        if (address is Map<String, dynamic>) {
+          label = _formatNominatimAddress(address);
+        }
+        label ??= (raw['display_name'] as String?)
+            ?.split(',')
+            .take(3)
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .join(', ');
+        if (label == null || label.isEmpty) continue;
+
+        if (seen.add(label.toLowerCase())) {
+          liveResults.add(ZimbabwePlace(label, lat, lon));
+        }
+      }
+
+      if (liveResults.isNotEmpty) {
+        return liveResults;
+      }
+    } catch (_) {
+      // Offline / rate-limited fallback to local matches.
+    }
+
+    return localMatches;
+  }
+
+  String? _formatNominatimAddress(Map<String, dynamic> address) {
+    final road = (address['road'] ??
+            address['amenity'] ??
+            address['shop'] ??
+            address['building']) as String?;
+    final suburb = (address['suburb'] ??
+            address['neighbourhood'] ??
+            address['residential'] ??
+            address['quarter']) as String?;
+    final town = (address['town'] ??
+            address['city'] ??
+            address['village'] ??
+            address['municipality'] ??
+            address['state']) as String?;
+
+    final parts = <String>[
+      if (road != null && road.trim().isNotEmpty) road.trim(),
+      if (suburb != null && suburb.trim().isNotEmpty) suburb.trim(),
+      if (town != null && town.trim().isNotEmpty) town.trim(),
+    ];
+
+    final deduped = <String>[];
+    for (final part in parts) {
+      if (!deduped.any((e) => e.toLowerCase() == part.toLowerCase())) {
+        deduped.add(part);
+      }
+    }
+    if (deduped.isEmpty) return null;
+    return deduped.take(3).join(', ');
   }
 
   static (ZimbabwePlace, double)? _findClosestPlace(

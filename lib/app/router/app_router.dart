@@ -7,9 +7,13 @@ import 'package:roadlink/features/community/presentation/pages/community_page.da
 import 'package:roadlink/features/home/presentation/pages/home_page.dart';
 import 'package:roadlink/features/home/presentation/pages/nearby_map_page.dart';
 import 'package:roadlink/features/marketplace/presentation/pages/marketplace_page.dart';
+import 'package:roadlink/features/marketplace/presentation/pages/marketplace_registration_page.dart';
+import 'package:roadlink/features/profile/presentation/pages/profile_page.dart';
+import 'package:roadlink/features/services/presentation/pages/service_registration_page.dart';
 import 'package:roadlink/features/services/presentation/pages/services_page.dart';
 import 'package:roadlink/features/settings/presentation/pages/settings_page.dart';
 import 'package:roadlink/features/splash/presentation/pages/splash_page.dart';
+import 'package:roadlink/features/users/presentation/pages/user_management_page.dart';
 
 /// Centralised route names and paths for Roadlink.
 class AppRoutes {
@@ -39,11 +43,23 @@ class AppRoutes {
   static const String servicesName = 'services';
   static const String servicesPath = '/services';
 
+  static const String serviceRegisterName = 'serviceRegister';
+  static const String serviceRegisterPath = '/services/register';
+
   static const String marketplaceName = 'marketplace';
   static const String marketplacePath = '/marketplace';
 
+  static const String marketplaceRegisterName = 'marketplaceRegister';
+  static const String marketplaceRegisterPath = '/marketplace/register';
+
   static const String communityName = 'community';
   static const String communityPath = '/community';
+
+  static const String userManagementName = 'userManagement';
+  static const String userManagementPath = '/users';
+
+  static const String profileName = 'profile';
+  static const String profilePath = '/profile';
 }
 
 /// Centralised application router configuration using [GoRouter].
@@ -116,11 +132,29 @@ class AppRouter {
           },
         ),
         GoRoute(
+          path: AppRoutes.serviceRegisterPath,
+          name: AppRoutes.serviceRegisterName,
+          builder: (BuildContext context, GoRouterState state) {
+            return const ServiceRegistrationPage();
+          },
+        ),
+        GoRoute(
           path: AppRoutes.marketplacePath,
           name: AppRoutes.marketplaceName,
           builder: (BuildContext context, GoRouterState state) {
             final category = state.uri.queryParameters['category'];
-            return MarketplacePage(initialCategory: category);
+            final saved = state.uri.queryParameters['saved'] == 'true';
+            return MarketplacePage(
+              initialCategory: category,
+              initialSavedOnly: saved,
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.marketplaceRegisterPath,
+          name: AppRoutes.marketplaceRegisterName,
+          builder: (BuildContext context, GoRouterState state) {
+            return const MarketplaceRegistrationPage();
           },
         ),
         GoRoute(
@@ -128,6 +162,20 @@ class AppRouter {
           name: AppRoutes.communityName,
           builder: (BuildContext context, GoRouterState state) {
             return const CommunityPage();
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.userManagementPath,
+          name: AppRoutes.userManagementName,
+          builder: (BuildContext context, GoRouterState state) {
+            return const UserManagementPage();
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.profilePath,
+          name: AppRoutes.profileName,
+          builder: (BuildContext context, GoRouterState state) {
+            return const ProfilePage();
           },
         ),
         GoRoute(

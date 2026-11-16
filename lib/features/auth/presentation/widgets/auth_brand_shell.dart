@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:roadlink/app/router/app_router.dart';
 import 'package:roadlink/app/theme/app_theme.dart';
@@ -282,7 +282,7 @@ class _ThinLocationPinPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppPalette.orange500
+      ..color = AppPalette.blue500
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round

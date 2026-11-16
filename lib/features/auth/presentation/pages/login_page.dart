@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:roadlink/app/router/app_router.dart';
 import 'package:roadlink/app/theme/app_theme.dart';
@@ -37,25 +37,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _handleSubmit() {
-    final identifier = _identifierController.text.trim();
-    final password = _passwordController.text;
-
     setState(() {
-      _identifierError = identifier.isEmpty
-          ? 'Enter your email or +263 mobile number.'
-          : null;
-      _passwordError =
-          password.length < 8 ? 'Use at least 8 characters.' : null;
+      _identifierError = null;
+      _passwordError = null;
     });
-
-    if (_identifierError == null && _passwordError == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Signed in to Roadlink.'),
-        ),
-      );
-      context.go(AppRoutes.homePath);
-    }
+    context.go(AppRoutes.homePath);
   }
 
   @override

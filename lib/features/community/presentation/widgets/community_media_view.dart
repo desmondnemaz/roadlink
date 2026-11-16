@@ -97,7 +97,7 @@ class _MediaTypeBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isReel ? AppPalette.orange500 : AppPalette.navy900,
+        color: isReel ? AppPalette.blue500 : AppPalette.navy900,
         borderRadius: AppRadius.pillAll,
       ),
       child: Row(
@@ -208,7 +208,7 @@ class _CommunityVideoPlayerState extends State<_CommunityVideoPlayer> {
               const Icon(
                 Icons.video_file_outlined,
                 size: 36,
-                color: AppPalette.orange500,
+                color: AppPalette.blue500,
               ),
               const SizedBox(height: AppSpacing.s8),
               Text(
@@ -233,7 +233,7 @@ class _CommunityVideoPlayerState extends State<_CommunityVideoPlayer> {
         child: Container(
           color: AppPalette.navy900,
           alignment: Alignment.center,
-          child: const CircularProgressIndicator(color: AppPalette.orange500),
+          child: const CircularProgressIndicator(color: AppPalette.blue500),
         ),
       );
     }
@@ -304,7 +304,7 @@ class _CommunityVideoPlayerState extends State<_CommunityVideoPlayer> {
                 controller,
                 allowScrubbing: true,
                 colors: const VideoProgressColors(
-                  playedColor: AppPalette.orange500,
+                  playedColor: AppPalette.blue500,
                   bufferedColor: AppPalette.neutral400,
                   backgroundColor: AppPalette.navy800,
                 ),

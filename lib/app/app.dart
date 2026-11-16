@@ -7,7 +7,9 @@ import 'package:roadlink/core/dependency_injection/injection_container.dart';
 import 'package:roadlink/core/utils/responsive.dart';
 import 'package:roadlink/features/community/presentation/cubit/community_cubit.dart';
 import 'package:roadlink/features/home/presentation/cubit/location_cubit.dart';
+import 'package:roadlink/features/services/presentation/cubit/service_request_cubit.dart';
 import 'package:roadlink/features/settings/presentation/cubit/theme_cubit.dart';
+import 'package:roadlink/features/tracking/presentation/cubit/tracking_cubit.dart';
 
 typedef MyApp = RoadlinkApp;
 
@@ -38,6 +40,16 @@ class RoadlinkApp extends StatelessWidget {
           create: (_) => sl.isRegistered<CommunityCubit>()
               ? sl<CommunityCubit>()
               : CommunityCubit(),
+        ),
+        BlocProvider<ServiceRequestCubit>(
+          create: (_) => sl.isRegistered<ServiceRequestCubit>()
+              ? sl<ServiceRequestCubit>()
+              : ServiceRequestCubit(),
+        ),
+        BlocProvider<TrackingCubit>(
+          create: (_) => sl.isRegistered<TrackingCubit>()
+              ? sl<TrackingCubit>()
+              : TrackingCubit(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(

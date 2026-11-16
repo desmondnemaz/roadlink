@@ -6,6 +6,7 @@ import 'package:roadlink/app/theme/app_theme.dart';
 import 'package:roadlink/features/home/data/nearby_providers.dart';
 import 'package:roadlink/features/home/presentation/cubit/location_cubit.dart';
 import 'package:roadlink/features/home/presentation/widgets/home_navigation.dart';
+import 'package:roadlink/features/tracking/presentation/cubit/tracking_cubit.dart';
 
 /// Interactive OpenStreetMap-powered nearby services map wired to [LocationCubit].
 ///
@@ -82,70 +83,125 @@ class _NearbyMapPageState extends State<NearbyMapPage> {
                 icon: const Icon(
                   Icons.edit_location_alt_outlined,
                   size: 16,
-                  color: AppPalette.orange500,
+                  color: AppPalette.blue500,
                 ),
                 label: Text(
                   'Change',
                   style: AppTypography.caption.copyWith(
-                    color: AppPalette.orange500,
+                    color: AppPalette.blue500,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ],
           ),
-          body: Stack(
-            children: [
-              FlutterMap(
-                mapController: _mapController,
-                options: MapOptions(
-                  initialCenter: LatLng(
-                    locationState.latitude,
-                    locationState.longitude,
-                  ),
-                  initialZoom: _currentZoom,
-                  minZoom: 5,
-                  maxZoom: 18,
-                  onPositionChanged: (camera, _) {
-                    _currentZoom = camera.zoom;
-                  },
-                ),
+          body: BlocBuilder<TrackingCubit, TrackingState>(
+            builder: (context, trackingState) {
+              final userLat = trackingState.isActive
+                  ? trackingState.userLat
+                  : locationState.latitude;
+              final userLng = trackingState.isActive
+                  ? trackingState.userLng
+                  : locationState.longitude;
+
+              return Stack(
                 children: [
-                  TileLayer(
-                    urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.roadlink.app',
-                  ),
-                  MarkerLayer(
-                    markers: [
-                      // User's active GPS / selected location marker
-                      Marker(
-                        point: LatLng(
-                          locationState.latitude,
-                          locationState.longitude,
+                  FlutterMap(
+                    mapController: _mapController,
+                    options: MapOptions(
+                      initialCenter: LatLng(userLat, userLng),
+                      initialZoom: _currentZoom,
+                      minZoom: 5,
+                      maxZoom: 18,
+                      onPositionChanged: (camera, _) {
+                        _currentZoom = camera.zoom;
+                      },
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.roadlink.app',
+                      ),
+                      if (trackingState.isActive)
+                        PolylineLayer(
+                          polylines: [
+                            Polyline(
+                              points: [
+                                LatLng(
+                                  trackingState.providerLat,
+                                  trackingState.providerLng,
+                                ),
+                                LatLng(userLat, userLng),
+                              ],
+                              color: AppPalette.blue500,
+                              strokeWidth: 4,
+                            ),
+                          ],
                         ),
-                        width: 44,
-                        height: 44,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppPalette.orange500.withValues(alpha: 0.25),
-                            shape: BoxShape.circle,
-                          ),
-                          alignment: Alignment.center,
-                          child: Container(
-                            width: 18,
-                            height: 18,
-                            decoration: BoxDecoration(
-                              color: AppPalette.orange500,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: AppPalette.neutral0,
-                                width: 2.5,
+                      MarkerLayer(
+                        markers: [
+                          // User's active GPS / selected location marker
+                          Marker(
+                            point: LatLng(userLat, userLng),
+                            width: 44,
+                            height: 44,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppPalette.blue500.withValues(
+                                  alpha: 0.25,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Container(
+                                width: 18,
+                                height: 18,
+                                decoration: BoxDecoration(
+                                  color: AppPalette.blue500,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppPalette.neutral0,
+                                    width: 2.5,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
+                          if (trackingState.isActive)
+                            Marker(
+                              point: LatLng(
+                                trackingState.providerLat,
+                                trackingState.providerLng,
+                              ),
+                              width: 48,
+                              height: 48,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: AppPalette.navy900,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppPalette.blue500,
+                                    width: 3,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.28,
+                                      ),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                alignment: Alignment.center,
+                                child: const Icon(
+                                  Icons.directions_car,
+                                  size: 20,
+                                  color: AppPalette.blue500,
+                                ),
+                              ),
+                            ),
                       // Nearby automotive provider pins
                       for (final provider in kNearbyProviders)
                         Marker(
@@ -163,7 +219,7 @@ class _NearbyMapPageState extends State<NearbyMapPage> {
                             child: Container(
                               decoration: BoxDecoration(
                                 color: activeProvider.name == provider.name
-                                    ? AppPalette.orange500
+                                    ? AppPalette.blue500
                                     : AppPalette.navy900,
                                 shape: BoxShape.circle,
                                 border: Border.all(
@@ -260,7 +316,7 @@ class _NearbyMapPageState extends State<NearbyMapPage> {
                               width: 44,
                               height: 44,
                               decoration: const BoxDecoration(
-                                color: AppPalette.orange50,
+                                color: AppPalette.blue50,
                                 borderRadius: AppRadius.mdAll,
                               ),
                               child: Icon(
@@ -294,7 +350,7 @@ class _NearbyMapPageState extends State<NearbyMapPage> {
                                       const Icon(
                                         Icons.star_border,
                                         size: 14,
-                                        color: AppPalette.orange500,
+                                        color: AppPalette.blue500,
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
@@ -323,7 +379,79 @@ class _NearbyMapPageState extends State<NearbyMapPage> {
                   ),
                 ),
               ),
+              if (trackingState.isActive)
+                Positioned(
+                  top: AppSpacing.s16,
+                  left: AppSpacing.s16,
+                  right: 72,
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 440),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.s16,
+                          vertical: AppSpacing.s12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppPalette.navy900,
+                          borderRadius: AppRadius.lgAll,
+                          border: Border.all(color: AppPalette.blue500),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.directions_car,
+                              color: AppPalette.blue500,
+                              size: 20,
+                            ),
+                            const SizedBox(width: AppSpacing.s12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Live tracking · ${trackingState.providerName}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTypography.label.copyWith(
+                                      color: AppPalette.neutral0,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(
+                                    trackingState.status ==
+                                            TrackingStatus.arrived
+                                        ? 'Provider has arrived'
+                                        : '${trackingState.etaMinutes} min away · ${trackingState.distanceKm.toStringAsFixed(1)} km',
+                                    style: AppTypography.caption.copyWith(
+                                      color: AppPalette.neutral300,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  context.read<TrackingCubit>().stopTracking(),
+                              child: Text(
+                                'Stop',
+                                style: AppTypography.caption.copyWith(
+                                  color: AppPalette.blue500,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
             ],
+          );
+            },
           ),
         );
       },
