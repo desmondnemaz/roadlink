@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:roadlink/app/router/app_router.dart';
 import 'package:roadlink/app/theme/app_theme.dart';
@@ -114,42 +115,43 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
-      backgroundColor: AppPalette.navy900,
+      backgroundColor: c.backgroundCanvas,
       bottomNavigationBar: HomeMobileBottomNav(
         selectedIndex: _selectedIndex,
         onSelectTab: _handleSelectTab,
       ),
-      body: SafeArea(
-        bottom: false,
-        child: ColoredBox(
-          color: c.backgroundCanvas,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const HomeMobileHeader(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.s20,
-                    AppSpacing.s20,
-                    AppSpacing.s20,
-                    AppSpacing.s24,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const HomeServicesAndNearYouSection(),
-                      const SizedBox(height: AppSpacing.s24),
-                      const HomeMarketplaceSection(),
-                      const SizedBox(height: AppSpacing.s24),
-                      const HomeCommunitySection(),
-                      const SizedBox(height: AppSpacing.s24),
-                      const HomeDashboardFooter(),
-                    ],
-                  ),
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const HomeMobileHeader(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s20,
+                  AppSpacing.s20,
+                  AppSpacing.s20,
+                  AppSpacing.s24,
                 ),
-              ],
-            ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const HomeServicesAndNearYouSection(),
+                    const SizedBox(height: AppSpacing.s24),
+                    const HomeMarketplaceSection(),
+                    const SizedBox(height: AppSpacing.s24),
+                    const HomeCommunitySection(),
+                    const SizedBox(height: AppSpacing.s24),
+                    const HomeDashboardFooter(),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

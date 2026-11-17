@@ -46,6 +46,7 @@ class _NearbyMapPageState extends State<NearbyMapPage> {
         setState(() => _selectedProvider = _closestProvider(state));
       },
       builder: (context, locationState) {
+        final c = context.colors;
         final activeProvider =
             _selectedProvider ?? _closestProvider(locationState);
         final distanceKm = activeProvider.distanceFrom(
@@ -54,11 +55,16 @@ class _NearbyMapPageState extends State<NearbyMapPage> {
         );
 
         return Scaffold(
-          backgroundColor: AppPalette.navy900,
+          backgroundColor: c.backgroundCanvas,
           appBar: AppBar(
-            backgroundColor: AppPalette.navy900,
+            backgroundColor: Colors.transparent,
             foregroundColor: AppPalette.neutral0,
             elevation: 0,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: RoadlinkColors.brandGradientHorizontal,
+              ),
+            ),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

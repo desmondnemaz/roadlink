@@ -95,7 +95,7 @@ void showServiceRequestSheet(
                             selected: selectedService == type,
                             onSelected: (_) =>
                                 setSheetState(() => selectedService = type),
-                            selectedColor: AppPalette.navy900,
+                            selectedColor: AppPalette.blue500,
                             backgroundColor: c.surfaceRaised,
                             labelStyle: AppTypography.caption.copyWith(
                               color: selectedService == type
@@ -506,7 +506,7 @@ class _BidTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.s16),
       decoration: BoxDecoration(
-        color: isAccepted ? AppPalette.navy900 : c.surfaceRaised,
+        color: isAccepted ? AppPalette.blue500.withValues(alpha: 0.12) : c.surfaceRaised,
         borderRadius: AppRadius.lgAll,
         border: Border.all(
           color: isAccepted ? AppPalette.blue500 : c.borderDefault,
@@ -581,7 +581,7 @@ class _BidTile extends StatelessWidget {
                 : ElevatedButton(
                     onPressed: anyAccepted ? null : onAccept,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppPalette.navy900,
+                      backgroundColor: AppPalette.blue500,
                       foregroundColor: AppPalette.neutral0,
                       elevation: 0,
                       minimumSize: const Size(110, 36),

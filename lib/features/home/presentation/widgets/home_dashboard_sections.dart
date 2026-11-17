@@ -111,12 +111,105 @@ class HomeServicesAndNearYouSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const HomeEmergencyRoadsideBanner(),
+        const SizedBox(height: AppSpacing.s16),
         _ServiceFinderHeroCard(isDesktop: isDesktop),
         const SizedBox(height: AppSpacing.s16),
         const _ActiveServiceRequestCard(),
         SizedBox(height: isDesktop ? AppSpacing.s24 : AppSpacing.s20),
         _ServicesNeedSection(isDesktop: isDesktop),
       ],
+    );
+  }
+}
+
+/// Amber/Orange accent banner for Emergency Roadside Alerts on the Home Dashboard.
+class HomeEmergencyRoadsideBanner extends StatelessWidget {
+  const HomeEmergencyRoadsideBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.s16,
+        vertical: AppSpacing.s12,
+      ),
+      decoration: BoxDecoration(
+        color: AppPalette.orange50,
+        borderRadius: AppRadius.mdAll,
+        border: Border.all(
+          color: AppPalette.orange500.withValues(alpha: 0.35),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: AppPalette.orange500.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.warning_amber_rounded,
+              color: AppPalette.orange600,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.s12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Emergency Roadside Help',
+                  style: AppTypography.label.copyWith(
+                    color: AppPalette.navy900,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '24/7 towing & breakdown assistance',
+                  style: AppTypography.caption.copyWith(
+                    color: AppPalette.neutral500,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.s12),
+          ElevatedButton.icon(
+            onPressed: () => showServiceRequestSheet(
+              context,
+              initialServiceType: 'Towing',
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppPalette.orange500,
+              foregroundColor: AppPalette.neutral0,
+              elevation: 0,
+              minimumSize: const Size(0, 38),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.s12,
+              ),
+              shape: const RoundedRectangleBorder(
+                borderRadius: AppRadius.mdAll,
+              ),
+            ),
+            icon: const Icon(Icons.sos_outlined, size: 16, color: AppPalette.neutral0),
+            label: Text(
+              'Get Help',
+              style: AppTypography.caption.copyWith(
+                color: AppPalette.neutral0,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -128,13 +221,16 @@ class _ServiceFinderHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
+
     return BlocBuilder<LocationCubit, LocationState>(
       builder: (context, locationState) {
         return Container(
           padding: EdgeInsets.all(isDesktop ? AppSpacing.s24 : AppSpacing.s20),
-          decoration: const BoxDecoration(
-            color: AppPalette.navy900,
+          decoration: BoxDecoration(
+            color: c.surfaceDefault,
             borderRadius: AppRadius.lgAll,
+            border: Border.all(color: c.borderDefault),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,7 +243,7 @@ class _ServiceFinderHeroCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppPalette.blue500.withValues(alpha: 0.16),
+                      color: AppPalette.blue500.withValues(alpha: 0.14),
                       borderRadius: AppRadius.pillAll,
                     ),
                     child: Row(
@@ -176,7 +272,7 @@ class _ServiceFinderHeroCard extends StatelessWidget {
               Text(
                 'Find trusted automotive help near you',
                 style: AppTypography.h2.copyWith(
-                  color: AppPalette.neutral0,
+                  color: c.textPrimary,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -185,7 +281,7 @@ class _ServiceFinderHeroCard extends StatelessWidget {
                 'Connect with verified mechanics, towing operators, and tyre '
                 'centres around ${locationState.areaLabel}.',
                 style: AppTypography.bodySmall.copyWith(
-                  color: AppPalette.neutral300,
+                  color: c.textSecondary,
                   height: 1.45,
                 ),
               ),
@@ -197,8 +293,8 @@ class _ServiceFinderHeroCard extends StatelessWidget {
                   ElevatedButton.icon(
                     onPressed: () => showServiceRequestSheet(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppPalette.buttonBlue,
-                      foregroundColor: AppPalette.navy900,
+                      backgroundColor: AppPalette.blue500,
+                      foregroundColor: AppPalette.neutral0,
                       elevation: 0,
                       minimumSize: const Size(0, 44),
                       padding: const EdgeInsets.symmetric(
@@ -208,20 +304,20 @@ class _ServiceFinderHeroCard extends StatelessWidget {
                         borderRadius: AppRadius.mdAll,
                       ),
                     ),
-                    icon: const Icon(Icons.add_circle_outline, size: 18),
+                    icon: const Icon(Icons.add_circle_outline, size: 18, color: AppPalette.neutral0),
                     label: Text(
                       'Request a service',
                       style: AppTypography.button.copyWith(
-                        color: AppPalette.navy900,
+                        color: AppPalette.neutral0,
                       ),
                     ),
                   ),
                   OutlinedButton.icon(
                     onPressed: () => context.push(AppRoutes.mapPath),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppPalette.neutral0,
-                      backgroundColor: AppPalette.navy800,
-                      side: const BorderSide(color: AppPalette.navy700),
+                      foregroundColor: c.textPrimary,
+                      backgroundColor: c.surfaceDefault,
+                      side: BorderSide(color: c.borderDefault),
                       minimumSize: const Size(0, 44),
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.s16,
@@ -230,11 +326,11 @@ class _ServiceFinderHeroCard extends StatelessWidget {
                         borderRadius: AppRadius.mdAll,
                       ),
                     ),
-                    icon: const Icon(Icons.map_outlined, size: 18),
+                    icon: Icon(Icons.map_outlined, size: 18, color: c.textPrimary),
                     label: Text(
                       'View nearby map',
                       style: AppTypography.button.copyWith(
-                        color: AppPalette.neutral0,
+                        color: c.textPrimary,
                       ),
                     ),
                   ),
@@ -276,7 +372,10 @@ class _ActiveServiceRequestCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: AppSpacing.s8,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
                           'YOUR SERVICE REQUEST',
@@ -286,7 +385,6 @@ class _ActiveServiceRequestCard extends StatelessWidget {
                             letterSpacing: 0.4,
                           ),
                         ),
-                        const SizedBox(width: AppSpacing.s8),
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -335,10 +433,8 @@ class _ActiveServiceRequestCard extends StatelessWidget {
                     ? () => context.push(AppRoutes.mapPath)
                     : () => showServiceBidsSheet(context, request.id),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      accepted ? AppPalette.blue500 : AppPalette.navy900,
-                  foregroundColor:
-                      accepted ? AppPalette.navy900 : AppPalette.neutral0,
+                  backgroundColor: AppPalette.blue500,
+                  foregroundColor: AppPalette.neutral0,
                   elevation: 0,
                   minimumSize: const Size(0, 40),
                   padding: const EdgeInsets.symmetric(
@@ -351,7 +447,7 @@ class _ActiveServiceRequestCard extends StatelessWidget {
                 child: Text(
                   accepted ? 'Track live →' : 'View bids →',
                   style: AppTypography.caption.copyWith(
-                    color: accepted ? AppPalette.navy900 : AppPalette.neutral0,
+                    color: AppPalette.neutral0,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -672,10 +768,10 @@ class _FilterChipPill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: selected ? AppPalette.navy900 : c.surfaceDefault,
+          color: selected ? AppPalette.blue500 : c.surfaceDefault,
           borderRadius: AppRadius.pillAll,
           border: Border.all(
-            color: selected ? AppPalette.navy900 : c.borderDefault,
+            color: selected ? AppPalette.blue500 : c.borderDefault,
           ),
         ),
         child: Text(

@@ -113,9 +113,9 @@ class RoadlinkColors extends ThemeExtension<RoadlinkColors> {
     textSecondary: AppPalette.neutral500,
     textMuted: AppPalette.neutral500,
     borderDefault: AppPalette.neutral200,
-    actionPrimary: AppPalette.navy900,
+    actionPrimary: AppPalette.blue500,
     actionOnPrimary: AppPalette.neutral0,
-    actionPrimaryHover: AppPalette.navy800,
+    actionPrimaryHover: AppPalette.blue600,
     actionAccent: AppPalette.buttonBlue,
     actionOnAccent: AppPalette.neutral0,
     actionAccentHover: AppPalette.blue400,
@@ -165,6 +165,12 @@ class RoadlinkColors extends ThemeExtension<RoadlinkColors> {
   static const LinearGradient brandGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
+    colors: [AppPalette.navy900, AppPalette.blue500],
+  );
+
+  static const LinearGradient brandGradientHorizontal = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
     colors: [AppPalette.navy900, AppPalette.blue500],
   );
 

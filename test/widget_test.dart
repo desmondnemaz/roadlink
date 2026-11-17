@@ -44,7 +44,7 @@ void main() {
         find.text('What does your car need?'),
       );
       expect(ctx.colors.backgroundCanvas, RoadlinkColors.light.backgroundCanvas);
-      expect(ctx.colors.actionPrimary, AppPalette.navy900);
+      expect(ctx.colors.actionPrimary, AppPalette.blue500);
 
       // Navigate to /settings and toggle Dark Theme.
       AppRouter.router.go(AppRoutes.settingsPath);

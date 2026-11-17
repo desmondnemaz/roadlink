@@ -96,8 +96,8 @@ class _MediaTypeBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: isReel ? AppPalette.blue500 : AppPalette.navy900,
+      decoration: const BoxDecoration(
+        color: AppPalette.blue500,
         borderRadius: AppRadius.pillAll,
       ),
       child: Row(
@@ -106,15 +106,15 @@ class _MediaTypeBadge extends StatelessWidget {
           Icon(
             isReel ? Icons.movie_creation_outlined : Icons.videocam_outlined,
             size: 13,
-            color: isReel ? AppPalette.navy900 : AppPalette.neutral0,
+            color: AppPalette.neutral0,
           ),
           const SizedBox(width: 4),
           Text(
             isReel ? 'REEL' : 'VIDEO',
             style: AppTypography.caption.copyWith(
-              color: isReel ? AppPalette.navy900 : AppPalette.neutral0,
+              color: AppPalette.neutral0,
               fontSize: 10.5,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w700,
               letterSpacing: 0.5,
             ),
           ),

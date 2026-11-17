@@ -152,7 +152,7 @@ void showNewPostSheet(
                           selected: selectedTopic == topic,
                           onSelected: (_) =>
                               setSheetState(() => selectedTopic = topic),
-                          selectedColor: AppPalette.navy900,
+                          selectedColor: AppPalette.blue500,
                           backgroundColor: c.surfaceRaised,
                           labelStyle: AppTypography.caption.copyWith(
                             color: selectedTopic == topic
@@ -694,9 +694,14 @@ class _CommunityPageState extends State<CommunityPage> {
           bottomNavigationBar:
               !isDesktop ? const HomeMobileBottomNav(selectedIndex: 3) : null,
           appBar: AppBar(
-            backgroundColor: AppPalette.navy900,
+            backgroundColor: Colors.transparent,
             foregroundColor: AppPalette.neutral0,
             elevation: 0,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: RoadlinkColors.brandGradientHorizontal,
+              ),
+            ),
             title: Text(
               'Community',
               style: AppTypography.label.copyWith(
@@ -883,10 +888,10 @@ class _CommunityPageState extends State<CommunityPage> {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.s16),
         decoration: BoxDecoration(
-          color: _savedOnly ? AppPalette.navy900 : c.surfaceDefault,
+          color: _savedOnly ? AppPalette.blue500 : c.surfaceDefault,
           borderRadius: AppRadius.lgAll,
           border: Border.all(
-            color: _savedOnly ? AppPalette.navy900 : c.borderDefault,
+            color: _savedOnly ? AppPalette.blue500 : c.borderDefault,
           ),
         ),
         child: Row(
@@ -894,7 +899,7 @@ class _CommunityPageState extends State<CommunityPage> {
             Icon(
               _savedOnly ? Icons.bookmark : Icons.bookmark_border,
               size: 20,
-              color: AppPalette.blue500,
+              color: _savedOnly ? AppPalette.neutral0 : AppPalette.blue500,
             ),
             const SizedBox(width: AppSpacing.s12),
             Expanded(
@@ -906,11 +911,20 @@ class _CommunityPageState extends State<CommunityPage> {
                 ),
               ),
             ),
-            Text(
-              '$savedCount',
-              style: AppTypography.caption.copyWith(
-                color: AppPalette.blue500,
-                fontWeight: FontWeight.w800,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: _savedOnly
+                    ? AppPalette.neutral0.withValues(alpha: 0.2)
+                    : AppPalette.blue50,
+                borderRadius: AppRadius.pillAll,
+              ),
+              child: Text(
+                '$savedCount',
+                style: AppTypography.caption.copyWith(
+                  color: _savedOnly ? AppPalette.neutral0 : AppPalette.blue600,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
           ],
@@ -1096,7 +1110,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 label: Text(topic),
                 selected: _selectedTopic == topic,
                 onSelected: (_) => setState(() => _selectedTopic = topic),
-                selectedColor: AppPalette.navy900,
+                selectedColor: AppPalette.blue500,
                 backgroundColor: c.surfaceDefault,
                 labelStyle: AppTypography.caption.copyWith(
                   color: _selectedTopic == topic
@@ -1106,7 +1120,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 ),
                 side: BorderSide(
                   color: _selectedTopic == topic
-                      ? AppPalette.navy900
+                      ? AppPalette.blue500
                       : c.borderDefault,
                 ),
               ),
@@ -1360,7 +1374,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   child: const Icon(
                     Icons.groups_outlined,
                     size: 22,
-                    color: AppPalette.navy900,
+                    color: AppPalette.blue600,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.s12),
@@ -1398,22 +1412,25 @@ class _CommunityPageState extends State<CommunityPage> {
                       .toggleJoinGroup(state.groups[i].id),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: state.groups[i].isJoined
-                        ? c.surfaceRaised
-                        : AppPalette.navy900,
+                        ? AppPalette.blue50
+                        : AppPalette.blue500,
                     foregroundColor: state.groups[i].isJoined
-                        ? c.textPrimary
+                        ? AppPalette.blue600
                         : AppPalette.neutral0,
                     elevation: 0,
+                    side: state.groups[i].isJoined
+                        ? BorderSide(color: AppPalette.blue500.withValues(alpha: 0.3))
+                        : BorderSide.none,
                     minimumSize: const Size(84, 36),
                     shape: const RoundedRectangleBorder(
                       borderRadius: AppRadius.mdAll,
                     ),
                   ),
                   child: Text(
-                    state.groups[i].isJoined ? 'Joined' : 'Join',
+                    state.groups[i].isJoined ? 'Joined ✓' : 'Join',
                     style: AppTypography.caption.copyWith(
                       color: state.groups[i].isJoined
-                          ? c.textPrimary
+                          ? AppPalette.blue600
                           : AppPalette.neutral0,
                       fontWeight: FontWeight.w700,
                     ),
@@ -1455,7 +1472,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   child: const Icon(
                     Icons.event_outlined,
                     size: 22,
-                    color: AppPalette.navy900,
+                    color: AppPalette.blue600,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.s12),
@@ -1463,21 +1480,33 @@ class _CommunityPageState extends State<CommunityPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        state.events[i].dateLabel,
-                        style: AppTypography.caption.copyWith(
-                          color: AppPalette.blue500,
-                          fontWeight: FontWeight.w700,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppPalette.blue50,
+                          borderRadius: AppRadius.pillAll,
+                        ),
+                        child: Text(
+                          state.events[i].dateLabel,
+                          style: AppTypography.caption.copyWith(
+                            color: AppPalette.blue600,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 11,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       Text(
                         state.events[i].title,
                         style: AppTypography.label.copyWith(
                           color: c.textPrimary,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
                         '${state.events[i].location} · ${state.events[i].attendees} going',
                         style: AppTypography.caption.copyWith(
@@ -1501,12 +1530,15 @@ class _CommunityPageState extends State<CommunityPage> {
                       .toggleEventRsvp(state.events[i].id),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: state.events[i].isGoing
-                        ? AppPalette.blue500
-                        : AppPalette.navy900,
+                        ? const Color(0xFFDCFCE7)
+                        : AppPalette.blue500,
                     foregroundColor: state.events[i].isGoing
-                        ? AppPalette.navy900
+                        ? const Color(0xFF166534)
                         : AppPalette.neutral0,
                     elevation: 0,
+                    side: state.events[i].isGoing
+                        ? const BorderSide(color: Color(0xFF86EFAC))
+                        : BorderSide.none,
                     minimumSize: const Size(84, 36),
                     shape: const RoundedRectangleBorder(
                       borderRadius: AppRadius.mdAll,
@@ -1516,9 +1548,9 @@ class _CommunityPageState extends State<CommunityPage> {
                     state.events[i].isGoing ? 'Going ✓' : 'RSVP',
                     style: AppTypography.caption.copyWith(
                       color: state.events[i].isGoing
-                          ? AppPalette.navy900
+                          ? const Color(0xFF166534)
                           : AppPalette.neutral0,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
@@ -1559,10 +1591,10 @@ class _SectionTabButton extends StatelessWidget {
             ? EdgeInsets.zero
             : const EdgeInsets.symmetric(horizontal: AppSpacing.s12),
         decoration: BoxDecoration(
-          color: selected ? AppPalette.navy900 : c.surfaceDefault,
+          color: selected ? AppPalette.blue500 : c.surfaceDefault,
           borderRadius: AppRadius.mdAll,
           border: Border.all(
-            color: selected ? AppPalette.navy900 : c.borderDefault,
+            color: selected ? AppPalette.blue500 : c.borderDefault,
           ),
         ),
         child: Row(
@@ -1572,7 +1604,7 @@ class _SectionTabButton extends StatelessWidget {
             Icon(
               icon,
               size: 18,
-              color: selected ? AppPalette.blue500 : c.textSecondary,
+              color: selected ? AppPalette.neutral0 : c.textSecondary,
             ),
             const SizedBox(width: AppSpacing.s8),
             Text(

@@ -110,10 +110,10 @@ class SectionNavButton extends StatelessWidget {
             ? EdgeInsets.zero
             : const EdgeInsets.symmetric(horizontal: AppSpacing.s12),
         decoration: BoxDecoration(
-          color: selected ? AppPalette.navy900 : c.surfaceDefault,
+          color: selected ? AppPalette.blue500 : c.surfaceDefault,
           borderRadius: AppRadius.mdAll,
           border: Border.all(
-            color: selected ? AppPalette.navy900 : c.borderDefault,
+            color: selected ? AppPalette.blue500 : c.borderDefault,
           ),
         ),
         child: Row(

@@ -100,9 +100,14 @@ class _ProfilePageState extends State<ProfilePage> {
       bottomNavigationBar:
           !isDesktop ? const HomeMobileBottomNav(selectedIndex: 4) : null,
       appBar: AppBar(
-        backgroundColor: AppPalette.navy900,
+        backgroundColor: Colors.transparent,
         foregroundColor: AppPalette.neutral0,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: RoadlinkColors.brandGradientHorizontal,
+          ),
+        ),
         title: Text(
           'Profile',
           style: AppTypography.label.copyWith(
@@ -127,7 +132,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               // Profile Header Card
               Container(
-                padding: const EdgeInsets.all(AppSpacing.s24),
+                padding: const EdgeInsets.all(AppSpacing.s20),
                 decoration: BoxDecoration(
                   color: c.surfaceDefault,
                   borderRadius: AppRadius.lgAll,
@@ -139,25 +144,69 @@ class _ProfilePageState extends State<ProfilePage> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        InitialsAvatar(initials: _initials, size: 60),
-                        const SizedBox(width: AppSpacing.s16),
+                        InitialsAvatar(initials: _initials, size: 56),
+                        const SizedBox(width: AppSpacing.s12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                _fullName,
-                                style: AppTypography.h2.copyWith(
-                                  color: c.textPrimary,
-                                  fontWeight: FontWeight.w800,
-                                ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      _fullName,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTypography.h2.copyWith(
+                                        color: c.textPrimary,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: AppSpacing.s8),
+                                  OutlinedButton.icon(
+                                    onPressed: _showEditProfileDialog,
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: AppSpacing.s12,
+                                        vertical: 6,
+                                      ),
+                                      minimumSize: const Size(0, 32),
+                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                    icon: const Icon(Icons.edit_outlined, size: 14),
+                                    label: const Text('Edit', style: TextStyle(fontSize: 12)),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Personal account · $_phone',
-                                style: AppTypography.caption.copyWith(
-                                  color: c.textSecondary,
-                                ),
+                              const SizedBox(height: 4),
+                              Wrap(
+                                spacing: 6,
+                                runSpacing: 2,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Text(
+                                    'Personal account',
+                                    style: AppTypography.caption.copyWith(
+                                      color: c.textSecondary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Text(
+                                    '·',
+                                    style: AppTypography.caption.copyWith(
+                                      color: c.textSecondary,
+                                    ),
+                                  ),
+                                  Text(
+                                    _phone,
+                                    style: AppTypography.caption.copyWith(
+                                      color: c.textSecondary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 6),
                               BlocBuilder<LocationCubit, LocationState>(
@@ -175,11 +224,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                           color: AppPalette.blue500,
                                         ),
                                         const SizedBox(width: 4),
-                                        Text(
-                                          loc.areaLabel,
-                                          style: AppTypography.caption.copyWith(
-                                            color: AppPalette.blue500,
-                                            fontWeight: FontWeight.w700,
+                                        Flexible(
+                                          child: Text(
+                                            loc.areaLabel,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: AppTypography.caption.copyWith(
+                                              color: AppPalette.blue500,
+                                              fontWeight: FontWeight.w700,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -189,11 +241,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ],
                           ),
-                        ),
-                        OutlinedButton.icon(
-                          onPressed: _showEditProfileDialog,
-                          icon: const Icon(Icons.edit_outlined, size: 16),
-                          label: const Text('Edit'),
                         ),
                       ],
                     ),

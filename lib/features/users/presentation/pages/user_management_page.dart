@@ -260,9 +260,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
     return Scaffold(
       backgroundColor: c.backgroundCanvas,
       appBar: AppBar(
-        backgroundColor: AppPalette.navy900,
+        backgroundColor: Colors.transparent,
         foregroundColor: AppPalette.neutral0,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: RoadlinkColors.brandGradientHorizontal,
+          ),
+        ),
         title: Text(
           'Admin',
           style: AppTypography.label.copyWith(

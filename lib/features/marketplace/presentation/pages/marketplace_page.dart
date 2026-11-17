@@ -157,7 +157,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppPalette.navy900,
+                          backgroundColor: AppPalette.blue500,
                           foregroundColor: AppPalette.neutral0,
                           elevation: 0,
                           minimumSize: const Size.fromHeight(46),
@@ -232,7 +232,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                     _selectedCategory = category;
                     _savedOnly = false;
                   }),
-                  selectedColor: AppPalette.navy900,
+                  selectedColor: AppPalette.blue500,
                   backgroundColor: c.surfaceDefault,
                   labelStyle: AppTypography.caption.copyWith(
                     color: _selectedCategory == category && !_savedOnly
@@ -242,7 +242,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
                   ),
                   side: BorderSide(
                     color: _selectedCategory == category && !_savedOnly
-                        ? AppPalette.navy900
+                        ? AppPalette.blue500
                         : c.borderDefault,
                   ),
                 ),
@@ -345,9 +345,14 @@ class _MarketplacePageState extends State<MarketplacePage> {
       bottomNavigationBar:
           !isDesktop ? const HomeMobileBottomNav(selectedIndex: 2) : null,
       appBar: AppBar(
-        backgroundColor: AppPalette.navy900,
+        backgroundColor: Colors.transparent,
         foregroundColor: AppPalette.neutral0,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: RoadlinkColors.brandGradientHorizontal,
+          ),
+        ),
         title: Text(
           'Marketplace',
           style: AppTypography.label.copyWith(
@@ -464,10 +469,10 @@ class _MarketplacePageState extends State<MarketplacePage> {
           child: Container(
             padding: const EdgeInsets.all(AppSpacing.s16),
             decoration: BoxDecoration(
-              color: _savedOnly ? AppPalette.navy900 : c.surfaceDefault,
+              color: _savedOnly ? AppPalette.blue500 : c.surfaceDefault,
               borderRadius: AppRadius.lgAll,
               border: Border.all(
-                color: _savedOnly ? AppPalette.navy900 : c.borderDefault,
+                color: _savedOnly ? AppPalette.blue500 : c.borderDefault,
               ),
             ),
             child: Row(

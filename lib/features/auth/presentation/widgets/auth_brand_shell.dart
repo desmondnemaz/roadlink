@@ -131,15 +131,16 @@ class AuthMobileSheetShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
       backgroundColor: AppPalette.navy900,
-      body: SafeArea(
-        bottom: false,
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: RoadlinkColors.brandGradient,
-          ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: RoadlinkColors.brandGradient,
+        ),
+        child: SafeArea(
+          bottom: false,
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
@@ -233,11 +234,11 @@ class AuthMobileSheetShell extends StatelessWidget {
                       top: Radius.circular(AppRadius.panel),
                     ),
                   ),
-                  padding: const EdgeInsets.fromLTRB(
+                  padding: EdgeInsets.fromLTRB(
                     AppSpacing.s24,
                     AppSpacing.s32,
                     AppSpacing.s24,
-                    AppSpacing.s32,
+                    AppSpacing.s32 + bottomInset,
                   ),
                   child: sheetChild,
                 ),

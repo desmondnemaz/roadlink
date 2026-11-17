@@ -88,108 +88,111 @@ class _MobileWelcomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppPalette.navy900,
-      body: SafeArea(
-        bottom: false,
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: RoadlinkColors.brandGradient,
-          ),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.s24,
-              vertical: AppSpacing.s32,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.sizeOf(context).height - 96,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: () => context.go(AppRoutes.homePath),
-                    borderRadius: AppRadius.smAll,
-                    child: const RoadlinkLogo(
-                      iconBoxSize: 40,
-                      wordmarkFontSize: 22,
-                    ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: RoadlinkColors.brandGradient,
+        ),
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.s24,
+                  vertical: AppSpacing.s24,
+                ),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight - AppSpacing.s48,
                   ),
-                  const SizedBox(height: AppSpacing.s32),
-                  Column(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const AuthLocationPinCircle(size: 220),
-                      const SizedBox(height: AppSpacing.s32),
-                      Text(
-                        'Your car world,\nall connected.',
-                        textAlign: TextAlign.center,
-                        style: AppTypography.displayOf(context).copyWith(
-                          color: AppPalette.neutral0,
+                      InkWell(
+                        onTap: () => context.go(AppRoutes.homePath),
+                        borderRadius: AppRadius.smAll,
+                        child: const RoadlinkLogo(
+                          iconBoxSize: 40,
+                          wordmarkFontSize: 22,
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.s12),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 340),
-                        child: Text(
-                          'Find services, explore the marketplace, and '
-                          'connect with car lovers across Zimbabwe.',
-                          textAlign: TextAlign.center,
-                          style: AppTypography.bodyOf(context).copyWith(
-                            color: AppPalette.neutral0.withValues(alpha: 0.92),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.s32),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: () => context.go(AppRoutes.signupPath),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppPalette.neutral0,
-                            foregroundColor: AppPalette.navy900,
-                            elevation: 0,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: AppRadius.mdAll,
+                      const SizedBox(height: AppSpacing.s24),
+                      Column(
+                        children: [
+                          const AuthLocationPinCircle(size: 200),
+                          const SizedBox(height: AppSpacing.s24),
+                          Text(
+                            'Your car world,\nall connected.',
+                            textAlign: TextAlign.center,
+                            style: AppTypography.displayOf(context).copyWith(
+                              color: AppPalette.neutral0,
                             ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.person_outline,
-                                size: 19,
-                                color: AppPalette.navy900,
+                          const SizedBox(height: AppSpacing.s12),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 340),
+                            child: Text(
+                              'Find services, explore the marketplace, and '
+                              'connect with car lovers across Zimbabwe.',
+                              textAlign: TextAlign.center,
+                              style: AppTypography.bodyOf(context).copyWith(
+                                color: AppPalette.neutral0.withValues(alpha: 0.92),
                               ),
-                              const SizedBox(width: AppSpacing.s8),
-                              Text(
-                                'Sign up',
-                                style: AppTypography.button.copyWith(
-                                  color: AppPalette.navy900,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.s24),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(
+                            height: 52,
+                            child: ElevatedButton(
+                              onPressed: () => context.go(AppRoutes.signupPath),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppPalette.neutral0,
+                                foregroundColor: AppPalette.navy900,
+                                elevation: 0,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: AppRadius.mdAll,
                                 ),
                               ),
-                            ],
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.person_outline,
+                                    size: 19,
+                                    color: AppPalette.navy900,
+                                  ),
+                                  const SizedBox(width: AppSpacing.s8),
+                                  Text(
+                                    'Sign up',
+                                    style: AppTypography.button.copyWith(
+                                      color: AppPalette.navy900,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.s16),
-                      AuthSwitchPrompt(
-                        promptText: 'Already have an account?',
-                        actionText: 'Log in',
-                        promptColor: AppPalette.neutral0.withValues(alpha: 0.9),
-                        actionColor: AppPalette.neutral0,
-                        onActionTap: () => context.go(AppRoutes.loginPath),
+                          const SizedBox(height: AppSpacing.s16),
+                          AuthSwitchPrompt(
+                            promptText: 'Already have an account?',
+                            actionText: 'Log in',
+                            promptColor: AppPalette.neutral0.withValues(alpha: 0.9),
+                            actionColor: AppPalette.neutral0,
+                            onActionTap: () => context.go(AppRoutes.loginPath),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),

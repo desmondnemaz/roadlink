@@ -206,7 +206,7 @@ class _ServicesPageState extends State<ServicesPage> {
                       selected: _selectedCategory == category,
                       onSelected: (_) =>
                           setState(() => _selectedCategory = category),
-                      selectedColor: AppPalette.navy900,
+                      selectedColor: AppPalette.blue500,
                       backgroundColor: c.surfaceDefault,
                       labelStyle: AppTypography.caption.copyWith(
                         color: _selectedCategory == category
@@ -216,7 +216,7 @@ class _ServicesPageState extends State<ServicesPage> {
                       ),
                       side: BorderSide(
                         color: _selectedCategory == category
-                            ? AppPalette.navy900
+                            ? AppPalette.blue500
                             : c.borderDefault,
                       ),
                     ),
@@ -332,9 +332,14 @@ class _ServicesPageState extends State<ServicesPage> {
           bottomNavigationBar:
               !isDesktop ? const HomeMobileBottomNav(selectedIndex: 1) : null,
           appBar: AppBar(
-            backgroundColor: AppPalette.navy900,
+            backgroundColor: Colors.transparent,
             foregroundColor: AppPalette.neutral0,
             elevation: 0,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: RoadlinkColors.brandGradientHorizontal,
+              ),
+            ),
             title: Text(
               'All services',
               style: AppTypography.label.copyWith(

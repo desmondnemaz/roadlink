@@ -180,7 +180,7 @@ void showMessagesSheet(BuildContext context) {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppPalette.navy900,
+                        backgroundColor: AppPalette.blue500,
                         foregroundColor: AppPalette.neutral0,
                         elevation: 0,
                         minimumSize: const Size(0, 44),
@@ -458,7 +458,7 @@ void showHelpSupportSheet(BuildContext context) {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppPalette.navy900,
+                    backgroundColor: AppPalette.blue500,
                     foregroundColor: AppPalette.neutral0,
                     elevation: 0,
                     minimumSize: const Size.fromHeight(46),

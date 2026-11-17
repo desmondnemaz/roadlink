@@ -383,9 +383,14 @@ class HomeDesktopSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
+
     return Container(
       width: 256,
-      color: AppPalette.navy900,
+      decoration: BoxDecoration(
+        color: c.surfaceDefault,
+        border: Border(right: BorderSide(color: c.borderDefault)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -408,7 +413,7 @@ class HomeDesktopSidebar extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.s24),
-                  _SectionLabel('YOUR ROADLINK'),
+                  const _SectionLabel('YOUR ROADLINK'),
                   const SizedBox(height: AppSpacing.s8),
                   _SidebarItem(
                     icon: Icons.home_outlined,
@@ -435,7 +440,7 @@ class HomeDesktopSidebar extends StatelessWidget {
                     onTap: () => onSelectTab(3),
                   ),
                   const SizedBox(height: AppSpacing.s20),
-                  _SectionLabel('MY SPACE'),
+                  const _SectionLabel('MY SPACE'),
                   const SizedBox(height: AppSpacing.s8),
                   _SidebarItem(
                     icon: Icons.assignment_outlined,
@@ -484,8 +489,8 @@ class HomeDesktopSidebar extends StatelessWidget {
               horizontal: AppSpacing.s20,
               vertical: AppSpacing.s16,
             ),
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AppPalette.navy800)),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: c.borderDefault)),
             ),
             child: InkWell(
               onTap: () => context.push(AppRoutes.profilePath),
@@ -502,14 +507,14 @@ class HomeDesktopSidebar extends StatelessWidget {
                         Text(
                           'Tendai Moyo',
                           style: AppTypography.label.copyWith(
-                            color: AppPalette.neutral0,
+                            color: c.textPrimary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         Text(
                           'Personal account',
                           style: AppTypography.caption.copyWith(
-                            color: AppPalette.neutral400,
+                            color: c.textSecondary,
                           ),
                         ),
                       ],
@@ -522,10 +527,10 @@ class HomeDesktopSidebar extends StatelessWidget {
                       );
                       context.go(AppRoutes.welcomePath);
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.logout,
                       size: 18,
-                      color: AppPalette.neutral300,
+                      color: c.textSecondary,
                     ),
                     tooltip: 'Log out',
                   ),
@@ -546,12 +551,14 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
       child: Text(
         text,
         style: AppTypography.caption.copyWith(
-          color: AppPalette.neutral400,
+          color: c.textSecondary,
           fontSize: 10.5,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.6,
@@ -576,6 +583,8 @@ class _SidebarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.colors;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: InkWell(
@@ -587,7 +596,9 @@ class _SidebarItem extends StatelessWidget {
             vertical: 10,
           ),
           decoration: BoxDecoration(
-            color: selected ? AppPalette.navy800 : Colors.transparent,
+            color: selected
+                ? AppPalette.blue500.withValues(alpha: 0.12)
+                : Colors.transparent,
             borderRadius: AppRadius.mdAll,
           ),
           child: Row(
@@ -595,15 +606,14 @@ class _SidebarItem extends StatelessWidget {
               Icon(
                 icon,
                 size: 19,
-                color: selected ? AppPalette.blue500 : AppPalette.neutral300,
+                color: selected ? AppPalette.blue500 : c.textSecondary,
               ),
               const SizedBox(width: AppSpacing.s12),
               Expanded(
                 child: Text(
                   label,
                   style: AppTypography.bodySmall.copyWith(
-                    color:
-                        selected ? AppPalette.neutral0 : AppPalette.neutral300,
+                    color: selected ? AppPalette.blue500 : c.textPrimary,
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   ),
                 ),
@@ -764,121 +774,122 @@ class HomeMobileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    final topInset = MediaQuery.paddingOf(context).top;
 
-    return ColoredBox(
-      color: AppPalette.navy900,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20,
-          AppSpacing.s16,
-          AppSpacing.s20,
-          AppSpacing.s20,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: RoadlinkColors.brandGradientHorizontal,
+      ),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.s20,
+        topInset > 0 ? topInset + AppSpacing.s12 : AppSpacing.s16,
+        AppSpacing.s20,
+        AppSpacing.s20,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const RoadlinkLogo(
+                iconBoxSize: 36,
+                wordmarkFontSize: 20,
+              ),
+              const Spacer(),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.notifications_none_outlined,
+                  color: AppPalette.neutral0,
+                  size: 22,
+                ),
+                tooltip: 'Notifications',
+              ),
+              const SizedBox(width: AppSpacing.s4),
+              InitialsAvatar(
+                initials: 'TM',
+                size: 36,
+                onTap: () => context.push(AppRoutes.profilePath),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.s16),
+          Text(
+            'Morning, Tendai.',
+            style: AppTypography.h1.copyWith(
+              color: AppPalette.neutral0,
+              fontSize: 26,
+              height: 32 / 26,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s8),
+          BlocBuilder<LocationCubit, LocationState>(
+            builder: (context, locationState) {
+              return InkWell(
+                onTap: () => showLocationPickerSheet(context),
+                borderRadius: AppRadius.smAll,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (locationState.isLoading)
+                      const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppPalette.blue500,
+                        ),
+                      )
+                    else
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 16,
+                        color: AppPalette.blue500,
+                      ),
+                    const SizedBox(width: 6),
+                    Text(
+                      locationState.areaLabel,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppPalette.neutral300,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 16,
+                      color: AppPalette.neutral300,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: AppSpacing.s16),
+          Container(
+            height: 44,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
+            decoration: BoxDecoration(
+              color: c.surfaceDefault,
+              borderRadius: AppRadius.mdAll,
+            ),
+            child: Row(
               children: [
-                const RoadlinkLogo(
-                  iconBoxSize: 36,
-                  wordmarkFontSize: 20,
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.notifications_none_outlined,
-                    color: AppPalette.neutral0,
-                    size: 22,
+                Icon(Icons.search, size: 18, color: c.textSecondary),
+                const SizedBox(width: AppSpacing.s12),
+                Expanded(
+                  child: Text(
+                    'Services, cars, parts & conversations',
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: c.textSecondary,
+                    ),
                   ),
-                  tooltip: 'Notifications',
-                ),
-                const SizedBox(width: AppSpacing.s4),
-                InitialsAvatar(
-                  initials: 'TM',
-                  size: 36,
-                  onTap: () => context.push(AppRoutes.profilePath),
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.s16),
-            Text(
-              'Morning, Tendai.',
-              style: AppTypography.h1.copyWith(
-                color: AppPalette.neutral0,
-                fontSize: 26,
-                height: 32 / 26,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.s8),
-            BlocBuilder<LocationCubit, LocationState>(
-              builder: (context, locationState) {
-                return InkWell(
-                  onTap: () => showLocationPickerSheet(context),
-                  borderRadius: AppRadius.smAll,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (locationState.isLoading)
-                        const SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppPalette.blue500,
-                          ),
-                        )
-                      else
-                        const Icon(
-                          Icons.location_on_outlined,
-                          size: 16,
-                          color: AppPalette.blue500,
-                        ),
-                      const SizedBox(width: 6),
-                      Text(
-                        locationState.areaLabel,
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppPalette.neutral300,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 2),
-                      const Icon(
-                        Icons.keyboard_arrow_down,
-                        size: 16,
-                        color: AppPalette.neutral300,
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: AppSpacing.s16),
-            Container(
-              height: 44,
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
-              decoration: BoxDecoration(
-                color: c.surfaceDefault,
-                borderRadius: AppRadius.mdAll,
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.search, size: 18, color: c.textSecondary),
-                  const SizedBox(width: AppSpacing.s12),
-                  Expanded(
-                    child: Text(
-                      'Services, cars, parts & conversations',
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: c.textSecondary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
